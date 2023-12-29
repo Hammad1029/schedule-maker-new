@@ -40,7 +40,7 @@ const AppBarTop = (props) => {
                   <Grid sx={{ display: "flex", alignItem: "center", justifyContent: "center" }} spacing={2} container>
                     <Grid item xs={6}>
                       <Typography>Login</Typography>
-                      <Login />
+                      <Login closeModal={props.closeModal}/>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography>Sign Up</Typography>
