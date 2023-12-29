@@ -20,7 +20,9 @@ const user = createSlice({
       state.loggedIn = true;
     },
     logoutUser(state, action) {
-      state = initialState;
+      state.userDetails = initialState.userDetails;
+      state.jwt = initialState.jwt;
+      state.loggedIn = initialState.loggedIn;
     },
   }
 });

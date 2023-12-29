@@ -18,7 +18,7 @@ const Dashboard = () => {
     return (
         <Box>
             <AppBarTop />
-            <Grid container spacing={2}sx={{mt:2, p:2}}>
+            <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
                 <Grid item xs={12} lg={4}>
                     {/* ADD SEARCH BUTTON HERE */}
                     <Constraints slots={slots} selectedCourses={selectedCourses} />

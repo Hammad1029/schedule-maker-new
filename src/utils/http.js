@@ -19,9 +19,9 @@ const httpService = async (config = {}) => {
         if (status === 200) {
             if (responseCode === "00") {
                 if (successNotif) NotificationManager.success(description, "SUCCESS")
-                return data;
+                return data || true;
             }
-            else NotificationManager.warning(description, "ERROR")
+            else NotificationManager.warning(responseDescription, "ERROR")
         } else if (status === 400) NotificationManager.error(data.join("\n"));
         else NotificationManager.error(description);
         return false;
