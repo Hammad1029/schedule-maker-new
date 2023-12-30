@@ -1,143 +1,3 @@
-// import React, { useState } from "react";
-// import {
-//   FormControl,
-//   InputAdornment,
-//   OutlinedInput,
-//   Button,
-//   Box,
-// } from "@mui/material";
-// import { SearchOutlined } from "@mui/icons-material";
-// import httpService from "../utils/http.js";
-// import { endpoints } from "../utils/http.js";
-// import SearchResultsModal from "./SearchResultsModal.js"; // Import the new modal component
-// import { useSelector } from "react-redux";
-
-// const Search = () => {
-//   const [searchInput, setSearchInput] = useState("");
-//   const [searchResults, setSearchResults] = useState([]);
-//   const jwtToken = useSelector((state) => state.user.token);
-//   const [openModal, setOpenModal] = useState(false);
-
-//   const handleSearch = async () => {
-//     try {
-//       const response = await httpService({
-//         endpoint: endpoints.course.search,
-//         base: endpoints.course.base,
-//         reqBody: { keyword: searchInput },
-//       });
-//     console.log(response)
-//       if (response) {
-//         setSearchResults(response.results);
-//         setOpenModal(true);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <Box sx={{ width: "100%", ml: { xs: 0, md: 1 } }}>
-//       <FormControl sx={{ width: { xs: "100%", md: 224 } }}>
-//         <OutlinedInput
-//           size="small"
-//           id="header-search"
-//           startAdornment={
-//             <InputAdornment position="start" sx={{ mr: -0.5 }}>
-//               <SearchOutlined />
-//             </InputAdornment>
-//           }
-//           aria-describedby="header-search-text"
-//           inputProps={{
-//             "aria-label": "weight",
-//           }}
-//           placeholder="Search"
-//           value={searchInput}
-//           onChange={(e) => setSearchInput(e.target.value)}
-//         />
-//       </FormControl>
-//       <Button variant="contained" color="primary" onClick={handleSearch}>
-//         Search
-//       </Button>
-//       <SearchResultsModal
-//         open={openModal}
-//         onClose={() => setOpenModal(false)}
-//         searchResults={searchResults}
-//       />
-//     </Box>
-//   );
-// };
-
-// export default Search;
-
-// import React, { useState } from "react";
-// import {
-//   FormControl,
-//   InputAdornment,
-//   OutlinedInput,
-//   Button,
-//   Box,
-// } from "@mui/material";
-// import { SearchOutlined } from "@mui/icons-material";
-// import httpService from "../utils/http.js";
-// import { endpoints } from "../utils/http.js";
-// import Muitable from "./MuiTable.js"; // Import the Muitable component
-// import { useSelector } from "react-redux";
-
-// const Search = () => {
-//   const [searchInput, setSearchInput] = useState("");
-//   const [searchResults, setSearchResults] = useState([]);
-//   const jwtToken = useSelector((state) => state.user.token);
-//   const [showResults, setShowResults] = useState(false); // State to toggle showing search results
-
-//   const handleSearch = async () => {
-//     try {
-//       const response = await httpService({
-//         endpoint: endpoints.course.search,
-//         base: endpoints.course.base,
-//         reqBody: { keyword: searchInput },
-//       });
-//       console.log(response);
-//       if (response) {
-//         setSearchResults(response.results);
-//         setShowResults(true); // Show the search results
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <Box sx={{ width: "100%", ml: { xs: 0, md: 1 } }}>
-//       <FormControl sx={{ width: { xs: "100%", md: 224 } }}>
-//         <OutlinedInput
-//           size="small"
-//           id="header-search"
-//           startAdornment={
-//             <InputAdornment position="start" sx={{ mr: -0.5 }}>
-//               <SearchOutlined />
-//             </InputAdornment>
-//           }
-//           aria-describedby="header-search-text"
-//           inputProps={{
-//             "aria-label": "weight",
-//           }}
-//           placeholder="Search"
-//           value={searchInput}
-//           onChange={(e) => setSearchInput(e.target.value)}
-//         />
-//       </FormControl>
-//       <Button variant="contained" color="primary" onClick={handleSearch}>
-//         Search
-//       </Button>
-//       {showResults && <Muitable rows={searchResults} />}{" "}
-//       {/* Render Muitable with search results */}
-//     </Box>
-//   );
-// };
-
-// export default Search;
-
-
 import React, { useState } from "react";
 import {
   FormControl,
@@ -180,13 +40,19 @@ const Search = () => {
         setSearchResults(response.results);
         setShowResults(true);
       }
+
+      console.log(response.results)
     } catch (error) {
       console.error(error);
     }
+  
   };
+
+  
 
   const handleAdvancedSearchToggle = () => {
     setAdvancedSearch(!advancedSearch);
+     setSearchInput("");
   };
 
   return (
@@ -257,6 +123,10 @@ const Search = () => {
               })
             }
           />
+
+          <Button variant="contained" color="primary" onClick={handleSearch}>
+            Search
+          </Button>
         </Box>
       )}
       {showResults && <Muitable rows={searchResults} />}
