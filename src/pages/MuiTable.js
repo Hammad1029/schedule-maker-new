@@ -1,93 +1,4 @@
-// import {
-//   Paper,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TablePagination,
-//   TableRow,
-// } from "@mui/material";
-// import { useEffect, useState } from "react";
-
-// const Muitable = ({ rows }) => {
-//   // Receive rows as a prop
-//   const columns = [
-//     // { id: 'id', name: 'ID' },
-//     { id: "slot", name: "Slot" },
-//     { id: "days", name: "Days" },
-//     { id: "title", name: "Title" },
-//     { id: "program", name: "Program" },
-//     { id: "room", name: "Room" },
-//     { id: "erp", name: "ERP" },
-//     { id: "instructor", name: "Instructor" },
-//   ];
-//   // ... (other components)
-//   const handlechangepage = (event, newpage) => {
-//     pagechange(newpage);
-//   };
-//   const handleRowsPerPage = (event) => {
-//     rowperpagechange(+event.target.value);
-//     pagechange(0);
-//   };
-//   //const [rows, rowchange] = useState([]);
-//   const [page, pagechange] = useState(0);
-//   const [rowperpage, rowperpagechange] = useState(5);
-//   useEffect(() => {
-//     // No need to fetch data here, it's received as a prop
-//   }, [rows]);
-
-//   return (
-//     <div style={{ textAlign: "center" }}>
-//       <Paper sx={{ width: "90%", marginLeft: "5%" }}>
-//         <TableContainer sx={{ maxHeight: 450 }}>
-//           <Table stickyHeader>
-//             <TableHead>
-//               <TableRow>
-//                 {columns.map((column) => (
-//                   <TableCell
-//                     style={{ backgroundColor: "black", color: "white" }}
-//                     key={column.id}
-//                   >
-//                     {column.name}
-//                   </TableCell>
-//                 ))}
-//               </TableRow>
-//             </TableHead>
-//             <TableBody>
-//               {rows &&
-//                 rows
-//                   .slice(page * rowperpage, page * rowperpage + rowperpage)
-//                   .map((row, i) => {
-//                     return (
-//                       <TableRow key={i}>
-//                         {columns &&
-//                           columns.map((column, i) => {
-//                             let value = row[column.id];
-//                             return <TableCell key={value}>{value}</TableCell>;
-//                           })}
-//                       </TableRow>
-//                     );
-//                   })}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-//         <TablePagination
-//           rowsPerPageOptions={[5, 10, 25]}
-//           rowsPerPage={rowperpage}
-//           page={page}
-//           count={rows.length}
-//           component="div"
-//           onPageChange={handlechangepage}
-//           onRowsPerPageChange={handleRowsPerPage}
-//         ></TablePagination>
-//       </Paper>
-//     </div>
-//   );
-// };
-
-// export default Muitable;
-
+import React, { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -97,8 +8,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Button,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 
 const Muitable = ({ rows }) => {
   const columns = [
@@ -109,6 +20,7 @@ const Muitable = ({ rows }) => {
     { id: "room", name: "Room" },
     { id: "erp", name: "ERP" },
     { id: "instructor", name: "Instructor" },
+    { id: "actions", name: "Actions" }, // New column for buttons
   ];
 
   const handlechangepage = (event, newpage) => {
@@ -122,21 +34,44 @@ const Muitable = ({ rows }) => {
 
   const [page, pagechange] = useState(0);
   const [rowperpage, rowperpagechange] = useState(5);
+  const [selectedERPs, setSelectedERPs] = useState([]); // List to store selected ERPs
 
   useEffect(() => {
     // No need to fetch data here, it's received as a prop
   }, [rows]);
 
+  const handleAddClass = (erp) => {
+    // Check if the ERP is already selected
+    const isAlreadySelected = selectedERPs.includes(erp);
+
+    // If it's already selected, remove it; otherwise, add it
+    if (isAlreadySelected) {
+      setSelectedERPs((prevERPs) =>
+        prevERPs.filter((selectedERP) => selectedERP !== erp)
+      );
+    } else {
+      setSelectedERPs((prevERPs) => [...prevERPs, erp]);
+    }
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       <Paper sx={{ width: "100%", overflowX: "auto" }}>
-        <TableContainer sx={{ minWidth: 800, maxHeight: 450 }}>
+        <TableContainer sx={{ width: "100%", maxHeight: 450 }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {columns.map((column, index) => (
                   <TableCell
-                    style={{ backgroundColor: "black", color: "white" }}
+                    style={{
+                      backgroundColor: "black",
+                      color: "white",
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 1,
+                      borderRight:
+                        index < columns.length - 1 ? "1px solid white" : "none", // Add right border
+                    }}
                     key={column.id}
                   >
                     {column.name}
@@ -148,17 +83,31 @@ const Muitable = ({ rows }) => {
               {rows &&
                 rows
                   .slice(page * rowperpage, page * rowperpage + rowperpage)
-                  .map((row, i) => {
-                    return (
-                      <TableRow key={i}>
-                        {columns &&
-                          columns.map((column, i) => {
-                            let value = row[column.id];
-                            return <TableCell key={value}>{value}</TableCell>;
-                          })}
-                      </TableRow>
-                    );
-                  })}
+                  .map((row, i) => (
+                    <TableRow key={i}>
+                      {columns.map((column, index) => (
+                        <TableCell
+                          key={column.id}
+                          style={{
+                            borderRight:
+                              index < columns.length - 1
+                                ? "1px solid #ddd"
+                                : "none",
+                          }} // Add right border
+                        >
+                          {column.id === "actions" ? (
+                            <Button onClick={() => handleAddClass(row.erp)}>
+                              {selectedERPs.includes(row.erp)
+                                ? "Remove Class"
+                                : "Add Class"}
+                            </Button>
+                          ) : (
+                            row[column.id]
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -172,86 +121,16 @@ const Muitable = ({ rows }) => {
           onRowsPerPageChange={handleRowsPerPage}
         ></TablePagination>
       </Paper>
+      <div>
+        <h3>Selected Courses:</h3>
+        <ul>
+          {selectedERPs.map((erp, index) => (
+            <li key={index}>{erp}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
 
 export default Muitable;
-
-
-
-// import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
-// import { useEffect, useState } from 'react';
-
-// const Muitable = ({ rows }) => {
-//   const columns = [
-//     { id: 'slot', name: 'Slot' },
-//     { id: 'days', name: 'Days' },
-//     { id: 'title', name: 'Title' },
-//     { id: 'program', name: 'Program' },
-//     { id: 'room', name: 'Room' },
-//     { id: 'erp', name: 'ERP' },
-//     { id: 'instructor', name: 'Instructor' }
-//   ];
-
-//   const [page, setPage] = useState(0);
-//   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-//   useEffect(() => {
-//     setPage(0); // Reset page when new rows are received
-//   }, [rows]);
-
-//   const handleChangePage = (event, newPage) => {
-//     setPage(newPage);
-//   };
-
-//   const handleChangeRowsPerPage = (event) => {
-//     setRowsPerPage(+event.target.value);
-//     setPage(0);
-//   };
-
-//   const totalPages = Math.ceil(rows.length / rowsPerPage);
-//   const displayPages = 10; // Limit to 10 pages
-
-//   return (
-//     <div style={{ textAlign: 'center' }}>
-//       <Paper sx={{ width: '90%', marginLeft: '5%' }}>
-//         <TableContainer sx={{ maxHeight: 450 }}>
-//           <Table stickyHeader>
-//             <TableHead>
-//               <TableRow>
-//                 {columns.map((column) => (
-//                   <TableCell style={{ backgroundColor: 'black', color: 'white' }} key={column.id}>
-//                     {column.name}
-//                   </TableCell>
-//                 ))}
-//               </TableRow>
-//             </TableHead>
-//             <TableBody>
-//               {rows &&
-//                 rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, i) => (
-//                   <TableRow key={i}>
-//                     {columns.map((column, j) => (
-//                       <TableCell key={j}>{row[column.id]}</TableCell>
-//                     ))}
-//                   </TableRow>
-//                 ))}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-//         <TablePagination
-//           rowsPerPageOptions={[5, 10, 25]}
-//           rowsPerPage={rowsPerPage}
-//           page={page}
-//           count={rows.length}
-//           component="div"
-//           onPageChange={handleChangePage}
-//           onRowsPerPageChange={handleChangeRowsPerPage}
-//           totalPages={displayPages} // Pass the total number of displayable pages
-//         />
-//       </Paper>
-//     </div>
-//   );
-// };
-
-// export default Muitable;
