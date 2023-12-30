@@ -15,7 +15,6 @@ import {
 import { useState } from "react";
 import _ from "lodash";
 import CourseListAccordion from "./CourseListAccordion";
-
 const Constraints = ({ selectedCourses, slots }) => {
   const [prioritized, setPrioritized] = useState([]);
   const [prioritizedTeachers, setPrioritizedTeachers] = useState({});
