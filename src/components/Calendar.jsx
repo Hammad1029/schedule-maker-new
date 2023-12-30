@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from 'react'
+import React, { Fragment, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import {
@@ -8,14 +8,28 @@ import {
     momentLocalizer,
 } from 'react-big-calendar'
 import { Box } from '@mui/material'
+import httpService, { endpoints } from '../utils/http'
 // import 'moment/locale/en-gb';
 
 const localizer = momentLocalizer(moment)
 
 const WeekCalendar = ({ schedule, slots }) => {
+    const [coursesId, setCoursesId] = useState([]);
+  const [constraints, setConstraints] = useState({});
+
+  useMemo(() => {
+    setCoursesId(schedule.map(course => course.id));
+    setConstraints({
+      schedule: schedule,
+      slots: slots,
+    });
+  }, [schedule, slots]);
+
+
 
     return (
         <Box>
+            <CustomToolbar label="YourLabel" coursesId={coursesId} constraints={constraints} />
             <Calendar
                 events={schedule.map(course => {
                     const start = moment(course.startTime, "HH:mm:ss").clone();
@@ -26,10 +40,7 @@ const WeekCalendar = ({ schedule, slots }) => {
                         start: start.day(day).toDate(),
                         end: end.day(day).toDate()
                     }))
-                }).flat()}
-                components={{
-                    toolbar: CustomToolbar,
-                }}  
+                }).flat()} 
                 localizer={localizer}
                 startAccessor="start"
                 endAccessor="end"
@@ -47,14 +58,31 @@ const WeekCalendar = ({ schedule, slots }) => {
 
 export default WeekCalendar;
 
-const CustomToolbar = toolbar => {
-    const { label } = toolbar;
+const CustomToolbar = ({ label, coursesId, constraints })  => {
+  
+
+    const handleSaveSchedule = async () => {
+        try{
+            const response = await httpService({
+                endpoint: endpoints.schedules.saveSchedule,
+                base: endpoints.schedules.base,
+                reqBody: { coursesId, constraints },
+                successNotif: true
+            });
+        }catch(error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div>
-            <button onClick={() => console.log(toolbar)} style={{ float: 'right' }}>
-                View others
+            <button onClick={handleSaveSchedule} style={{ float: 'right', marginBottom: '10px' }}>
+                View Others
             </button>
+            <button style={{ float: 'right', marginRight: '20px'  }}>
+                Save Schedule
+            </button>
+            
         </div>
     );
 };
