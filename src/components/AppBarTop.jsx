@@ -11,23 +11,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/reducers/user';
 import { NotificationManager } from 'react-notifications';
 import { Grid } from '@mui/material';
+import SaveScheduleList from './saveSchedule'; // Adjusted import
 
 const AppBarTop = (props) => {
-  const { userDetails: { firstName, lastName }, loggedIn } = useSelector(state => state.user)
+  const { userDetails: { firstName, lastName, erp }, loggedIn } = useSelector(state => state.user)
   const dispatch = useDispatch();
 
-  const viewSaved = () => {
-    if (!loggedIn) NotificationManager.error("Please Login First")
-    else {
+  const [isSaveScheduleListOpen, setSaveScheduleListOpen] = React.useState(false);
 
-    }
+  const handleCloseSaveScheduleList = () => {
+    setSaveScheduleListOpen(false);
   }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Button sx={{ mr: "auto" }} color="inherit" onClick={viewSaved}>View Saved Schedules</Button>
+          
+            <Button sx={{ mr: "auto" }} color="inherit" onClick={() => setSaveScheduleListOpen(true)}>
+              View Saved Schedules
+            </Button>
+          
           {loggedIn ?
             <>
               <Typography style={{ mr: 1 }}>{firstName} {lastName}</Typography>
@@ -51,6 +55,8 @@ const AppBarTop = (props) => {
             >Login</Button>}
         </Toolbar>
       </AppBar>
+      {/* Render the SaveScheduleList component based on state */}
+      <SaveScheduleList erp={erp} open={isSaveScheduleListOpen} onClose={handleCloseSaveScheduleList} />
     </Box>
   );
 }
