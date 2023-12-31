@@ -23,10 +23,12 @@ const Constraints = ({ selectedCourses, slots }) => {
   const [firstLast, setFirstLast] = useState([0, 0]);
   const [gaps, setGaps] = useState([0, 0]);
 
-  const displaySelectedCourses = () => {
+   const displaySelectedCourses = () => {
     return selectedCourses.map((course) => ({
       title: `${course.instructor} - ${course.title}`,
-      subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot}`,
+      subText: `${course.erp} | ${course.days?.join(" & ")} | ${
+        course.slot
+      } | ${course.instructor} | ${course.title}  `,
     }));
   };
 
