@@ -1,9 +1,10 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Button} from "@mui/material";
 import Constraints from "../components/Constraints";
 import { useState } from "react";
 import * as _ from "lodash";
 import WeekCalendar from "../components/Calendar";
 import AppBarTop from "../components/AppBarTop";
+import Search from "../components/Search"; // Assuming you have a Search component
 
 const Dashboard = () => {
     const [selectedCourses, setSelectedCourses] = useState(sampleData.map(course => {
@@ -14,24 +15,35 @@ const Dashboard = () => {
         })
     }))
     const [slots, setSlots] = useState(slotsData)
+  const [showSearch, setShowSearch] = useState(false);
 
     return (
-        <Box>
-            <AppBarTop />
-            <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
-                <Grid item xs={12} lg={4}>
-                    {/* ADD SEARCH BUTTON HERE */}
-                    <Constraints slots={slots} selectedCourses={selectedCourses} />
-                </Grid>
-                <Grid item xs={12} lg={8}>
-                    <WeekCalendar slots={slots} schedule={selectedCourses} />
-                </Grid>
-            </Grid>
-        </Box>
-    )
+      <Box>
+        <AppBarTop />
+        <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+          <Grid item xs={12} lg={6}>
+            {/* ADD SEARCH BUTTON HERE */}
+
+            <Button
+              variant="contained"
+              onClick={() => setShowSearch(!showSearch)}
+            >
+              {showSearch ? "Hide Search" : "Add course"}
+            </Button>
+
+            {showSearch && <Search />}
+            <Constraints slots={slots} selectedCourses={selectedCourses} />
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <WeekCalendar slots={slots} schedule={selectedCourses} />
+          </Grid>
+        </Grid>
+      </Box>
+    );
 }
 
 export default Dashboard;
+
 
 const slotsData = [
     {
