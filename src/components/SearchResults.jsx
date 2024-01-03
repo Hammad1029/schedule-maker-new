@@ -1,13 +1,13 @@
-
 import React, { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+
 
 const SearchResults = ({ data, handlePageChange, selectCourses }) => {
   const columns = [
     { field: "slot", headerName: "Slot" },
     { field: "days", headerName: "Days" },
-    { field: "title", headerName: "Title",  },
+    { field: "title", headerName: "Title" },
     { field: "program", headerName: "Program" },
     { field: "room", headerName: "Room" },
     { field: "erp", headerName: "ERP" },
@@ -27,23 +27,25 @@ const SearchResults = ({ data, handlePageChange, selectCourses }) => {
   const [page, setPage] = useState(currentPage - 1); // DataGrid uses 0-based indexing
   const [rowPerPage, setRowPerPage] = useState(5);
   const [selectedCourses, setSelectedCourses] = useState([]);
-console.log(
-  currentPage,
-  totalResults,
-  totalPages,
-  hasNextPage,
-  pageSize,
-  loading
-);
+  console.log(
+    currentPage,
+    totalResults,
+    totalPages,
+    hasNextPage,
+    pageSize,
+    loading
+  );
 
   useEffect(() => {
     // Fetch data from the backend when page or rowPerPage changes
     // Implement your API call here
     // You can use the handlePageChange function to update the server-side pagination
+
+    
   }, [page, rowPerPage]);
 
   return (
-    <Paper >
+    <Paper>
       <DataGrid
         // sx={{ width: "100%", maxHeight: 450 }}
         rows={results}
