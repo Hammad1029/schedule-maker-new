@@ -27,7 +27,7 @@ const CourseListAccordion = ({ title = "", data = [], actions = [] }) => {
                         {actions.length > 0 &&
                             <ButtonGroup variant="contained" sx={{ marginLeft: 1 }}>
                                 {actions.map(ac => (
-                                    <Button onClick={() => ac.callback(i)}> {ac.title}</Button>
+                                    <Button size="small" onClick={() => ac.callback(i)}> {ac.title}</Button>
                                 ))}
                             </ButtonGroup>}
                     </Box>

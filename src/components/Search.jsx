@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormControl,
   InputAdornment,
@@ -6,128 +6,147 @@ import {
   Button,
   TextField,
   Box,
+  Grid,
+  ButtonGroup,
 } from "@mui/material";
 import { SearchOutlined } from "@mui/icons-material";
 import httpService from "../utils/http.js";
 import { endpoints } from "../utils/http.js";
-import Muitable from "./MuiTable";
-import { useSelector } from "react-redux";
+import { useFormik } from 'formik';
+import SearchResults from "./SearchResults.jsx";
 
-const Search = () => {
-  const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [showResults, setShowResults] = useState(false);
-  const [advancedSearch, setAdvancedSearch] = useState(false); // State to toggle advanced search
+const Search = ({ addCourses }) => {
+  const [searchResults, setSearchResults] = useState({
+    results: [],
+    currentPage: 0,
+    totalResults: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    pageSize: 0,
+    loading: false
+  });
 
-  const [advancedSearchData, setAdvancedSearchData] = useState({
+  const [selected, setSelected] = useState([]);
+  const selectCourses = (ids) =>
+    setSelected(searchResults.results.filter((row) => ids.includes(row.id)))
+
+
+  const [advanced, setAdvanced] = useState(false);
+
+  const toggleAdvanced = () => {
+    setAdvanced(prev => !prev);
+    formik.setValues(initialValues)
+  }
+
+  useEffect(() => {
+    handleSearch(initialValues)
+  }, [])
+
+  const initialValues = {
+    keyword: "",
     erp: "",
     instructor: "",
     title: "",
     days: "",
-  });
+    page: 1,
+    pageSize: 10
+  }
 
-  const jwtToken = useSelector((state) => state.user.token);
-
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
     try {
+      setSearchResults(prev => ({ ...prev, loading: true }))
       const response = await httpService({
         endpoint: endpoints.course.search,
         base: endpoints.course.base,
-        reqBody: { keyword: searchInput, ...advancedSearchData },
+        reqBody: values,
       });
-
-      if (response) {
-        setSearchResults(response.results);
-        setShowResults(true);
-      }
-
-      console.log(response.results);
+      if (response) setSearchResults(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      setSearchResults(prev => ({ ...prev, loading: false }))
     }
-  };
+  }
 
-  const handleAdvancedSearchToggle = () => {
-    setAdvancedSearch(!advancedSearch);
-    setSearchInput('');
-  };
+  const handlePageChange = async (page) => handleSearch({ ...formik.values, page })
+
+  const formik = useFormik({
+    initialValues,
+    onSubmit: handleSearch
+  });
 
   return (
-    <Box sx={{ width: "100%", ml: { xs: 0, md: 1 } }}>
-      <FormControl sx={{ width: { xs: "100%", md: 224 } }}>
-        <OutlinedInput
-          size="small"
-          id="header-search"
-          startAdornment={
-            <InputAdornment position="start" sx={{ mr: -0.5 }}>
-              <SearchOutlined />
-            </InputAdornment>
-          }
-          aria-describedby="header-search-text"
-          inputProps={{
-            "aria-label": "weight",
-          }}
-          placeholder="Search"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-        />
-      </FormControl>
-      <Button variant="contained" color="primary" onClick={handleSearch}>
-        Search
-      </Button>
-      <Button onClick={handleAdvancedSearchToggle}>
-        {advancedSearch ? "Hide Advanced Search" : "Advanced Search"}
-      </Button>
-      {advancedSearch && (
-        <Box sx={{ width: "100%", ml: { xs: 0, md: 1 } }}>
-          <TextField
-            label="ERP"
-            value={advancedSearchData.erp}
-            onChange={(e) =>
-              setAdvancedSearchData({
-                ...advancedSearchData,
-                erp: e.target.value,
-              })
-            }
-          />
-          <TextField
-            label="Instructor"
-            value={advancedSearchData.instructor}
-            onChange={(e) =>
-              setAdvancedSearchData({
-                ...advancedSearchData,
-                instructor: e.target.value,
-              })
-            }
-          />
-          <TextField
-            label="Title"
-            value={advancedSearchData.title}
-            onChange={(e) =>
-              setAdvancedSearchData({
-                ...advancedSearchData,
-                title: e.target.value,
-              })
-            }
-          />
-          <TextField
-            label="Days"
-            value={advancedSearchData.days}
-            onChange={(e) =>
-              setAdvancedSearchData({
-                ...advancedSearchData,
-                days: e.target.value,
-              })
-            }
-          />
-
-          <Button variant="contained" color="primary" onClick={handleSearch}>
+    <Box component="form">
+      <Grid spacing={1} container>
+        {advanced ? (
+          <>
+            <Grid item xs={6}>
+              <TextField
+                label="ERP"
+                name="erp"
+                fullWidth
+                onChange={formik.handleChange}
+                value={formik.values.erp}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Instructor"
+                name="instructor"
+                fullWidth
+                onChange={formik.handleChange}
+                value={formik.values.instructor}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Title"
+                name="title"
+                fullWidth
+                onChange={formik.handleChange}
+                value={formik.values.title}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Days"
+                name="days"
+                fullWidth
+                onChange={formik.handleChange}
+                value={formik.values.days}
+              />
+            </Grid>
+          </>
+        )
+          : (
+            <Grid item xs={12}>
+              <OutlinedInput
+                fullWidth
+                size="small"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SearchOutlined />
+                  </InputAdornment>
+                }
+                placeholder="Search"
+                name="keyword"
+                onChange={formik.handleChange}
+                value={formik.values.keyword}
+              />
+            </Grid>
+          )}
+        <ButtonGroup sx={{ ml: "auto", mt: 1 }} variant="contained">
+          <Button onClick={() => addCourses(selected)}>Add Selected</Button>
+          <Button variant="contained" onClick={toggleAdvanced}>
+            {advanced ? "Keyword Search" : "Advanced Search"}
+          </Button>
+          <Button variant="contained" color="primary" onClick={formik.handleSubmit}>
             Search
           </Button>
-        </Box>
-      )}
-      {showResults && <Muitable rows={searchResults} />}
-    </Box>
+        </ButtonGroup>
+      </Grid >
+      <SearchResults selectCourses={selectCourses} handlePageChange={handlePageChange} data={searchResults} />
+    </Box >
   );
 };
 

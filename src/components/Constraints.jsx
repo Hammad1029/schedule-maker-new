@@ -13,24 +13,18 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import _ from "lodash";
+import _, { remove } from "lodash";
 import CourseListAccordion from "./CourseListAccordion";
+import { useSelector } from "react-redux";
 
-const Constraints = ({ selectedCourses, slots }) => {
+const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
   const [prioritized, setPrioritized] = useState([]);
   const [prioritizedTeachers, setPrioritizedTeachers] = useState({});
   const [offdays, setOffdays] = useState([]);
   const [firstLast, setFirstLast] = useState([0, 0]);
   const [gaps, setGaps] = useState([0, 0]);
 
-   const displaySelectedCourses = () => {
-    return selectedCourses.map((course) => ({
-      title: `${course.instructor} - ${course.title}`,
-      subText: `${course.erp} | ${course.days?.join(" & ")} | ${
-        course.slot
-      } | ${course.instructor} | ${course.title}  `,
-    }));
-  };
+  const slots = useSelector(state => state.app.slots);
 
   const handleChange = (event) => {
     const {
@@ -41,11 +35,13 @@ const Constraints = ({ selectedCourses, slots }) => {
 
   return (
     <Box>
-    
-
       <CourseListAccordion
         title="Selected Courses"
-        data={displaySelectedCourses()}
+        data={selectedCourses.map((course) => ({
+          ...course,
+          mainText: `${course.instructor} - ${course.title}`,
+          subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot} | ${course.instructor} | ${course.title}  `,
+        }))}
         actions={[
           {
             callback: (i) =>
@@ -61,16 +57,19 @@ const Constraints = ({ selectedCourses, slots }) => {
               })),
             title: "Prioritize Teacher",
           },
+          {
+            callback: (i) => removeCourse(i.erp),
+            title: "Remove",
+          },
         ]}
       />
 
       <CourseListAccordion
         title="Prioritized Courses"
         data={prioritized.map((course) => ({
+          ...course,
           mainText: `${course.instructor} - ${course.title}`,
-          subText: `${course.erp} | ${course.days?.join(" & ")} | ${
-            course.slot
-          }`,
+          subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot}`,
         }))}
         actions={[
           {
@@ -183,6 +182,11 @@ const Constraints = ({ selectedCourses, slots }) => {
             ))}
           </Select>
         </FormControl>
+        <Box>
+          <Button variant="contained" onClick={makeSchedule({
+            prioritized, prioritizedTeachers, gaps, firstLast, offdays
+          })}>Make Schedule</Button>
+        </Box>
       </Box>
     </Box>
   );
