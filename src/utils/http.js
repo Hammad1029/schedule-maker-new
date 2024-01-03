@@ -4,15 +4,15 @@ import { NotificationManager } from "react-notifications";
 
 const httpService = async (config = {}) => {
     try {
-        let { baseURL, endpoint, base, reqBody, jwt, successNotif, description } = { ...defaultConfig, ...config };
+        let { baseURL, endpoint, base, reqBody, token, successNotif, description } = { ...defaultConfig, ...config };
         if (endpoint === undefined || base === undefined) throw new Error("Endpoint not given");
-        if (!endpoint[2]) jwt = `Bearer ${store.getState().user.token}`;
+        if (!endpoint[2]) token = `Bearer ${store.getState().user.token}`;
         const res = await axios({
             method: endpoint[1],
             url: `${base}/${endpoint[0]}`,
             baseURL,
             data: reqBody,
-            headers: { Authorization: jwt },
+            headers: { Authorization: token },
         })
         const { data: { responseCode, responseDescription, data }, status } = res;
         description = description || responseDescription;

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/reducers/user';
 import { NotificationManager } from 'react-notifications';
 import { Grid } from '@mui/material';
+import SavedSchedules from './SavedSchedules'; // Adjusted import
 
 const AppBarTop = (props) => {
   const { userDetails: { firstName, lastName }, loggedIn } = useSelector(state => state.user)
@@ -19,7 +20,12 @@ const AppBarTop = (props) => {
   const viewSaved = () => {
     if (!loggedIn) NotificationManager.error("Please Login First")
     else {
-
+      props.openModal({
+        title: "Saved Schedules",
+        bodyComp: (
+          <SavedSchedules />
+        )
+      })
     }
   }
 
@@ -27,7 +33,12 @@ const AppBarTop = (props) => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Button sx={{ mr: "auto" }} color="inherit" onClick={viewSaved}>View Saved Schedules</Button>
+
+          <Button sx={{ mr: "auto" }} color="inherit" onClick={viewSaved}>
+            View Saved Schedules
+          </Button>
+
+
           {loggedIn ?
             <>
               <Typography style={{ mr: 1 }}>{firstName} {lastName}</Typography>
@@ -40,7 +51,7 @@ const AppBarTop = (props) => {
                   <Grid sx={{ display: "flex", alignItem: "center", justifyContent: "center" }} spacing={2} container>
                     <Grid item xs={6}>
                       <Typography>Login</Typography>
-                      <Login closeModal={props.closeModal}/>
+                      <Login closeModal={props.closeModal} />
                     </Grid>
                     <Grid item xs={6}>
                       <Typography>Sign Up</Typography>
