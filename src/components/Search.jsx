@@ -14,6 +14,7 @@ import httpService from "../utils/http.js";
 import { endpoints } from "../utils/http.js";
 import { useFormik } from 'formik';
 import SearchResults from "./SearchResults.jsx";
+import Muitable from "./MuiTable";
 
 const Search = ({ addCourses }) => {
   const [searchResults, setSearchResults] = useState({
@@ -117,36 +118,41 @@ const Search = ({ addCourses }) => {
               />
             </Grid>
           </>
-        )
-          : (
-            <Grid item xs={12}>
-              <OutlinedInput
-                fullWidth
-                size="small"
-                startAdornment={
-                  <InputAdornment position="start">
-                    <SearchOutlined />
-                  </InputAdornment>
-                }
-                placeholder="Search"
-                name="keyword"
-                onChange={formik.handleChange}
-                value={formik.values.keyword}
-              />
-            </Grid>
-          )}
+        ) : (
+          <Grid item xs={12}>
+            <OutlinedInput
+              fullWidth
+              size="small"
+              startAdornment={
+                <InputAdornment position="start">
+                  <SearchOutlined />
+                </InputAdornment>
+              }
+              placeholder="Search"
+              name="keyword"
+              onChange={formik.handleChange}
+              value={formik.values.keyword}
+            />
+          </Grid>
+        )}
         <ButtonGroup sx={{ ml: "auto", mt: 1 }} variant="contained">
           <Button onClick={() => addCourses(selected)}>Add Selected</Button>
           <Button variant="contained" onClick={toggleAdvanced}>
             {advanced ? "Keyword Search" : "Advanced Search"}
           </Button>
-          <Button variant="contained" color="primary" onClick={formik.handleSubmit}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={formik.handleSubmit}
+          >
             Search
           </Button>
         </ButtonGroup>
-      </Grid >
-      <SearchResults selectCourses={selectCourses} handlePageChange={handlePageChange} data={searchResults} />
-    </Box >
+      </Grid>
+      {/* <SearchResults selectCourses={selectCourses} handlePageChange={handlePageChange} data={searchResults} /> */}
+      {/* <Muitable /> */}
+      {<Muitable rows={searchResults.results} selectCourses={selectCourses} />}
+    </Box>
   );
 };
 
