@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Constraints from "./Constraints"; // Import the Constraints component
 
-const Muitable = ({ rows }) => {
+const Muitable = ({ rows, selectCourses }) => {
   const columns = [
     { id: "slot", name: "Slot" },
     { id: "days", name: "Days" },
@@ -23,7 +23,7 @@ const Muitable = ({ rows }) => {
     { id: "instructor", name: "Instructor" },
     { id: "actions", name: "Actions" }, // New column for buttons
   ];
-    const [slots, setSlots] = useState(slotsData);
+  const [slots, setSlots] = useState(slotsData);
 
   const handlechangepage = (event, newpage) => {
     pagechange(newpage);
@@ -39,13 +39,14 @@ const Muitable = ({ rows }) => {
   const [selectedCourses, setSelectedCourses] = useState([]);
   useEffect(() => {
     // No need to fetch data here, it's received as a prop
+//selectCourses(selectedCourses);
+
   }, [rows]);
 
-  const handleAddClass = (course) => {
 
+const handleAddClass = (course) => {
     const isAlreadySelected = selectedCourses.some(
       (selectedCourse) => selectedCourse.erp === course.erp
-
     );
 
     if (isAlreadySelected) {
@@ -57,7 +58,13 @@ const Muitable = ({ rows }) => {
     } else {
       setSelectedCourses((prevCourses) => [...prevCourses, course]);
     }
+
+    // Call the selectCourses prop with the updated selectedCourses
+    const selectedCourseIds = selectedCourses.map((selectedCourse) => selectedCourse.id);
+    selectCourses(selectedCourseIds);
+    console.log(selectedCourses)
   };
+
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -135,23 +142,22 @@ const Muitable = ({ rows }) => {
           {/* {selectedERPs.map((erp, index) => (
             <li key={index}>{erp}</li>
           ))} */}
-
           {selectedCourses.map((course, index) => (
             <li key={index}>
               {course.instructor} - {course.title} | {course.erp} |{" "}
               {course.days?.join(" & ")} | {course.slot}
             </li>
-          ))
+          ))}
           
-          }
         </ul>
-      
-        {selectedCourses && <Constraints slots={slotsData} selectedCourses={selectedCourses} />}
+
+        {/* {selectedCourses && (
+          <Constraints slots={slotsData} selectedCourses={selectedCourses} />
+        )} */}
       </div>
     </div>
   );
 };
-
 
 const slotsData = [
   {
