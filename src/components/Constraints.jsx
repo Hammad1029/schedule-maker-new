@@ -4,6 +4,7 @@ import {
   Button,
   Checkbox,
   Chip,
+  Divider,
   FormControl,
   InputLabel,
   ListItemText,
@@ -16,6 +17,8 @@ import { useState } from "react";
 import _, { remove } from "lodash";
 import CourseListAccordion from "./CourseListAccordion";
 import { useSelector } from "react-redux";
+
+const dividerMargin = 1
 
 const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
   const [prioritized, setPrioritized] = useState([]);
@@ -34,74 +37,98 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
   };
 
   return (
-    <Box>
-      <CourseListAccordion
-        title="Selected Courses"
-        data={selectedCourses.map((course) => ({
-          ...course,
-          mainText: `${course.instructor} - ${course.title}`,
-          subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot} | ${course.instructor} | ${course.title}  `,
-        }))}
-        actions={[
-          {
-            callback: (i) =>
-              prioritized.filter((p) => p.erp === i.erp).length === 0 &&
-              setPrioritized((prevState) => [...prevState, i]),
-            title: "Prioritize",
-          },
-          {
-            callback: (i) =>
-              setPrioritizedTeachers((prevState) => ({
-                ...prevState,
-                [i.title]: i.instructor,
-              })),
-            title: "Prioritize Teacher",
-          },
-          {
-            callback: (i) => removeCourse(i.erp),
-            title: "Remove",
-          },
-        ]}
-      />
+    <Box sx={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "80%",
+      "&>*": {
+        width: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      },
+    }}>
+      <Box>
+        <CourseListAccordion
+          title="Selected Courses"
+          data={selectedCourses.map((course) => ({
+            ...course,
+            mainText: `${course.instructor} - ${course.title}`,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot} | ${course.instructor} | ${course.title}  `,
+          }))}
+          actions={[
+            {
+              callback: (i) =>
+                prioritized.filter((p) => p.erp === i.erp).length === 0 &&
+                setPrioritized((prevState) => [...prevState, i]),
+              title: "Prioritize",
+            },
+            {
+              callback: (i) =>
+                setPrioritizedTeachers((prevState) => ({
+                  ...prevState,
+                  [i.title]: i.instructor,
+                })),
+              title: "Prioritize Teacher",
+            },
+            {
+              callback: (i) => removeCourse(i.erp),
+              title: "Remove",
+            },
+          ]}
+        />
+      </Box>
 
-      <CourseListAccordion
-        title="Prioritized Courses"
-        data={prioritized.map((course) => ({
-          ...course,
-          mainText: `${course.instructor} - ${course.title}`,
-          subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot}`,
-        }))}
-        actions={[
-          {
-            callback: ({ erp }) =>
-              setPrioritized((prevState) =>
-                prevState.filter((i) => i.erp !== erp)
-              ),
-            title: "Remove",
-          },
-        ]}
-      />
-
-      <CourseListAccordion
-        title="Prioritized Teachers"
-        data={Object.keys(prioritizedTeachers).map((courseName) => ({
-          mainText: prioritizedTeachers[courseName],
-          subText: courseName,
-        }))}
-        actions={[
-          {
-            callback: ({ subText: courseName }) =>
-              setPrioritizedTeachers((prevState) =>
-                _.omit(prevState, courseName)
-              ),
-            title: "Remove",
-          },
-        ]}
-      />
+      <Divider sx={{ m: dividerMargin }} />
 
       <Box>
-        <Typography>Off days</Typography>
-        <FormControl sx={{ m: 1, width: 300 }}>
+        <CourseListAccordion
+          title="Prioritized Courses"
+          data={prioritized.map((course) => ({
+            ...course,
+            mainText: `${course.instructor} - ${course.title}`,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot}`,
+          }))}
+          actions={[
+            {
+              callback: ({ erp }) =>
+                setPrioritized((prevState) =>
+                  prevState.filter((i) => i.erp !== erp)
+                ),
+              title: "Remove",
+            },
+          ]}
+        />
+      </Box>
+
+      <Divider sx={{ m: dividerMargin }} />
+
+      <Box>
+        <CourseListAccordion
+          title="Prioritized Teachers"
+          data={Object.keys(prioritizedTeachers).map((courseName) => ({
+            mainText: prioritizedTeachers[courseName],
+            subText: courseName,
+          }))}
+          actions={[
+            {
+              callback: ({ subText: courseName }) =>
+                setPrioritizedTeachers((prevState) =>
+                  _.omit(prevState, courseName)
+                ),
+              title: "Remove",
+            },
+          ]}
+        />
+      </Box>
+
+      <Divider sx={{ m: dividerMargin }} />
+
+      <Box >
+        <Typography variant="button" sx={{ mr: 2 }}>Off days</Typography>
+        <FormControl sx={{ m: 1, minWidth: 150 }} size="small">
           <InputLabel>Off days</InputLabel>
           <Select
             multiple
@@ -120,41 +147,48 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
         </FormControl>
       </Box>
 
-      <Box>
-        <Typography>First & last class</Typography>
-        <FormControl>
-          <InputLabel>First Class</InputLabel>
-          <Select
-            value={firstLast[0]}
-            label="First Class"
-            onChange={(e) => setFirstLast((prev) => [e.target.value, prev[1]])}
-          >
-            {slots.map((i) => (
-              <MenuItem key={i.id} value={i.id}>
-                {i.timing}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel>Last Class</InputLabel>
-          <Select
-            value={firstLast[1]}
-            label="Last Class"
-            onChange={(e) => setFirstLast((prev) => [prev[0], e.target.value])}
-          >
-            {slots.map((i) => (
-              <MenuItem key={i.id} value={i.id}>
-                {i.timing}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      <Divider sx={{ m: dividerMargin }} />
+
+      <Box >
+        <Typography variant="button">First & last class</Typography>
+        <Box sx={{ display: "flex" }}>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel>First Class</InputLabel>
+            <Select
+              value={firstLast[0]}
+              label="First Class"
+              onChange={(e) => setFirstLast((prev) => [e.target.value, prev[1]])}
+            >
+              {slots.map((i) => (
+                <MenuItem key={i.id} value={i.id}>
+                  {i.timing}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel>Last Class</InputLabel>
+            <Select
+              value={firstLast[1]}
+              autoWidth
+              label="Last Class"
+              onChange={(e) => setFirstLast((prev) => [prev[0], e.target.value])}
+            >
+              {slots.map((i) => (
+                <MenuItem key={i.id} value={i.id}>
+                  {i.timing}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Box >
+
+      <Divider sx={{ m: dividerMargin }} />
 
       <Box>
-        <Typography>Min & max gap length (in terms of slots)</Typography>
-        <FormControl>
+        <Typography variant="button">Min & max gap length (in terms of slots)</Typography>
+          <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
           <InputLabel>Minimum</InputLabel>
           <Select
             value={gaps[0]}
@@ -168,7 +202,7 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             ))}
           </Select>
         </FormControl>
-        <FormControl>
+        <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
           <InputLabel>Maximum</InputLabel>
           <Select
             value={gaps[1]}
@@ -182,13 +216,14 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             ))}
           </Select>
         </FormControl>
-        <Box>
-          <Button variant="contained" onClick={makeSchedule({
-            prioritized, prioritizedTeachers, gaps, firstLast, offdays
-          })}>Make Schedule</Button>
-        </Box>
       </Box>
-    </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 0.5 }}>
+        <Button variant="contained" onClick={makeSchedule({
+          prioritized, prioritizedTeachers, gaps, firstLast, offdays
+        })}>Make Schedule</Button>
+      </Box>
+    </Box >
   );
 };
 

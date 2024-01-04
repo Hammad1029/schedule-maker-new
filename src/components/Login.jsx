@@ -1,32 +1,27 @@
-import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, CssBaseline, Box } from '@mui/material';
-import { styled } from '@mui/system';
+import React from 'react';
+import {  TextField, Button, Box, Grid } from '@mui/material';
 import httpService from '../utils/http.js';
 import { endpoints } from '../utils/http.js';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../store/reducers/user';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
-const Form = styled('form')({
-    width: '100%',
-    marginTop: (theme) => theme.spacing(1),
-});
+const loginSchema = Yup.object({
+    erp: Yup.string().min(5).max(5).required('ERP is required'),
+    password: Yup.string().required('Password is required'),
+}).required();
 
-const SubmitButton = styled(Button)({
-    margin: (theme) => theme.spacing(3, 0, 2),
-});
 
 const LoginForm = ({ closeModal }) => {
-    const [erp, setErp] = useState('');
-    const [password, setPassword] = useState('');
     const dispatch = useDispatch();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (values) => {
         try {
-            e.preventDefault();
             const response = await httpService({
                 endpoint: endpoints.auth.login,
                 base: endpoints.auth.base,
-                reqBody: { erp, password },
+                reqBody: values,
                 successNotif: true
             });
 
@@ -34,44 +29,59 @@ const LoginForm = ({ closeModal }) => {
                 dispatch(loginUser({ token: response.token, userDetails: response.userDetails }));
                 closeModal()
             }
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            console.error(e);
         }
     };
 
+    const formik = useFormik({
+        initialValues: {
+            erp: "",
+            password: "",
+        },
+        validationSchema: loginSchema,
+        onSubmit: handleSubmit
+    });
+
+    const getErrorProps = (name) => ({
+        error: formik.touched[name] && Boolean(formik.errors[name]),
+        helperText: formik.touched[name] && formik.errors[name]
+    })
+
+
     return (
-        <Box>
-            <Form onSubmit={handleSubmit}>
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="erp"
-                    label="ERP"
-                    name="erp"
-                    autoComplete="erp"
-                    autoFocus
-                    value={erp}
-                    onChange={(e) => setErp(e.target.value)}
-                />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <SubmitButton type="submit" fullWidth variant="contained" color="primary">
-                    Sign In
-                </SubmitButton>
-            </Form>
+        <Box component="form" onSubmit={formik.handleSubmit}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        type="text"
+                        label="ERP"
+                        name="erp"
+                        value={formik.values.erp}
+                        onChange={formik.handleChange}
+                        {...getErrorProps("erp")}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        type="password"
+                        label="Password"
+                        name="password"
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        {...getErrorProps("password")}
+                    />
+                </Grid>
+                <Grid xs={12} sx={{ mt: 1 }}>
+                    <Button variant="contained" fullWidth type="submit" >
+                        Sign In
+                    </Button>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import httpService from '../utils/http.js';
 import { endpoints } from '../utils/http.js';
+import { useDispatch } from 'react-redux';
+import { setIndex } from '../store/reducers/app.js';
 
 const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
   const [schedules, setSchedules] = useState([]);
@@ -40,6 +42,8 @@ const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
     if (response) getData()
   }
 
+  const dispatch = useDispatch()
+
   return (
     <>
       {schedules.length > 0
@@ -60,6 +64,7 @@ const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
               <ButtonGroup variant="contained" sx={{ marginLeft: 1 }}>
                 <Button size="small" onClick={() => {
                   populateSavedSchedule(schedule.courses)
+                  dispatch(setIndex(0))
                   closeModal()
                 }}> Populate</Button>
                 <Button size="small" onClick={() => deleteSchedule(schedule.scheduleId)}>Delete</Button>

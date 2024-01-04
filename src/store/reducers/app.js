@@ -5,7 +5,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     slots: [],
     generationChecks: [],
-    loading: false
+    loading: false,
+    selectedIdx: 0
 };
 
 // ==============================|| SLICE - MENU ||============================== //
@@ -20,10 +21,13 @@ const app = createSlice({
         },
         setLoading(state, action) {
             state.loading = action.payload
+        },
+        setIndex(state,action) {
+            state.selectedIdx = action.payload
         }
     }
 });
 
 export default app.reducer;
 
-export const { setAppData, setLoading } = app.actions;
+export const { setAppData, setLoading,setIndex } = app.actions;

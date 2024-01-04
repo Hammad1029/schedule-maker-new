@@ -180,10 +180,11 @@ const WithModal = (Component) =>
   function HOC(props) {
     const defaultModalSettings = {
       bodyComp: <></>,
+      maxWidth: "md",
       showBody: true,
       title: "",
-      onSubmit: () => {},
-      onCancel: () => {},
+      onSubmit: () => { },
+      onCancel: () => { },
       showSubmit: false,
       showCancel: false,
     };
@@ -211,6 +212,7 @@ const WithModal = (Component) =>
       title,
       onSubmit,
       onCancel,
+      maxWidth
     } = {
       ...defaultModalSettings,
       ...modalSettings,
@@ -228,8 +230,8 @@ const WithModal = (Component) =>
           open={modalOpen}
           onClose={closeModal}
           fullWidth
-          maxWidth="md"
-          sx={{ zIndex: 9999 }}
+          maxWidth={maxWidth}
+          sx={{ zIndex: 10 }}
         >
           <DialogTitle
             sx={{ display: "flex", justifyContent: "space-between" }}

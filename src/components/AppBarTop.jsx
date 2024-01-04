@@ -10,7 +10,7 @@ import WithModal from "./WithModal";
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/reducers/user';
 import { NotificationManager } from 'react-notifications';
-import { Grid } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import SavedSchedules from './SavedSchedules'; // Adjusted import
 
 const AppBarTop = (props) => {
@@ -33,10 +33,9 @@ const AppBarTop = (props) => {
       <AppBar position="static">
         <Toolbar>
 
-          <Button sx={{ mr: "auto" }} color="inherit" onClick={viewSaved}>
+          <Button sx={{ mr: "auto" }} variant="contained" color="primary" onClick={viewSaved}>
             View Saved Schedules
           </Button>
-
 
           {loggedIn ?
             <>
@@ -48,12 +47,20 @@ const AppBarTop = (props) => {
                 title: "Login / Sign Up",
                 bodyComp: (
                   <Grid sx={{ display: "flex", alignItem: "center", justifyContent: "center" }} spacing={2} container>
-                    <Grid item xs={6}>
-                      <Typography>Login</Typography>
+                    <Grid item xs={12} md={6} >
+                      <Typography variant="body1" sx={{ mb: 2 }}>Login</Typography>
                       <Login closeModal={props.closeModal} />
                     </Grid>
-                    <Grid item xs={6}>
-                      <Typography>Sign Up</Typography>
+                    <Box
+                      component={Grid}
+                      item
+                      xs={12}
+                      display={{ md: "none", sm: "block" }}
+                    >
+                      <Divider sx={{ m: 3, backgroundColor: "black" }} />
+                    </Box>
+                    <Grid item xs={12} md={6} >
+                      <Typography variant="body1" sx={{ mb: 2 }}>Sign Up</Typography>
                       <SignUp />
                     </Grid>
                   </Grid>)

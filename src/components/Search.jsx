@@ -151,7 +151,7 @@ const Search = ({ addCourses }) => {
       </Grid>
       {/* <SearchResults selectCourses={selectCourses} handlePageChange={handlePageChange} data={searchResults} /> */}
       {/* <Muitable /> */}
-      {<Muitable rows={searchResults.results} selectCourses={selectCourses} />}
+      {<Muitable handlePageChange={handlePageChange} searchResults={searchResults} selectCourses={selectCourses} />}
     </Box>
   );
 };

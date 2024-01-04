@@ -12,7 +12,9 @@ import {
 } from "@mui/material";
 import Constraints from "./Constraints"; // Import the Constraints component
 
-const Muitable = ({ rows, selectCourses }) => {
+const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
+  const { results: rows, totalPages, pageSize, currentPage: page } = searchResults
+
   const columns = [
     { id: "slot", name: "Slot" },
     { id: "days", name: "Days" },
@@ -23,28 +25,10 @@ const Muitable = ({ rows, selectCourses }) => {
     { id: "instructor", name: "Instructor" },
     { id: "actions", name: "Actions" }, // New column for buttons
   ];
-  const [slots, setSlots] = useState(slotsData);
 
-  const handlechangepage = (event, newpage) => {
-    pagechange(newpage);
-  };
-
-  const handleRowsPerPage = (event) => {
-    rowperpagechange(+event.target.value);
-    pagechange(0);
-  };
-
-  const [page, pagechange] = useState(0);
-  const [rowperpage, rowperpagechange] = useState(5);
   const [selectedCourses, setSelectedCourses] = useState([]);
-  useEffect(() => {
-    // No need to fetch data here, it's received as a prop
-//selectCourses(selectedCourses);
 
-  }, [rows]);
-
-
-const handleAddClass = (course) => {
+  const handleAddClass = (course) => {
     const isAlreadySelected = selectedCourses.some(
       (selectedCourse) => selectedCourse.erp === course.erp
     );
@@ -69,14 +53,14 @@ const handleAddClass = (course) => {
   return (
     <div style={{ textAlign: "center" }}>
       <Paper sx={{ width: "100%", overflowX: "auto" }}>
-        <TableContainer sx={{ width: "100%", maxHeight: 450 }}>
+        <TableContainer sx={{ width: "100%", maxHeight: 450, mt: 1 }}>
           <Table stickyHeader>
-            <TableHead>
+            <TableHead onClick={() => console.log(rows)}>
               <TableRow>
                 {columns.map((column, index) => (
                   <TableCell
                     style={{
-                      backgroundColor: "black",
+                      backgroundColor: "#700F1A",
                       color: "white",
                       position: "sticky",
                       top: 0,
@@ -92,106 +76,47 @@ const handleAddClass = (course) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows &&
-                rows
-                  .slice(page * rowperpage, page * rowperpage + rowperpage)
-                  .map((row, i) => (
-                    <TableRow key={i}>
-                      {columns.map((column, index) => (
-                        <TableCell
-                          key={column.id}
-                          style={{
-                            borderRight:
-                              index < columns.length - 1
-                                ? "1px solid #ddd"
-                                : "none",
-                          }} // Add right border
-                        >
-                          {column.id === "actions" ? (
-                            <Button onClick={() => handleAddClass(row)}>
-                              {selectedCourses.some(
-                                (selectedCourse) =>
-                                  selectedCourse.erp === row.erp
-                              )
-                                ? "Remove Class"
-                                : "Add Class"}
-                            </Button>
-                          ) : (
-                            row[column.id]
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
+              {rows.map((row, i) => (
+                <TableRow key={i}>
+                  {columns.map((column, index) => (
+                    <TableCell
+                      key={column.id}
+                      style={{
+                        borderRight:
+                          index < columns.length - 1
+                            ? "1px solid #ddd"
+                            : "none",
+                      }} // Add right border
+                    >
+                      {column.id === "actions" ? (
+                        <Button onClick={() => handleAddClass(row)}>
+                          {selectedCourses.some(
+                            (selectedCourse) =>
+                              selectedCourse.id === row.id
+                          )
+                            ? "Remove Class"
+                            : "Add Class"}
+                        </Button>
+                      ) : (
+                        row[column.id]
+                      )}
+                    </TableCell>
                   ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          rowsPerPage={rowperpage}
-          page={page}
-          count={rows.length}
+          rowsPerPage={pageSize}
+          page={page-1}
+          count={totalPages}
           component="div"
-          onPageChange={handlechangepage}
-          onRowsPerPageChange={handleRowsPerPage}
+          onPageChange={(e, p) => handlePageChange(p+1)}
         ></TablePagination>
       </Paper>
-      <div>
-        <h3>Selected Courses:</h3>
-        <ul>
-          {/* {selectedERPs.map((erp, index) => (
-            <li key={index}>{erp}</li>
-          ))} */}
-          {selectedCourses.map((course, index) => (
-            <li key={index}>
-              {course.instructor} - {course.title} | {course.erp} |{" "}
-              {course.days?.join(" & ")} | {course.slot}
-            </li>
-          ))}
-          
-        </ul>
-
-        {/* {selectedCourses && (
-          <Constraints slots={slotsData} selectedCourses={selectedCourses} />
-        )} */}
-      </div>
     </div>
   );
 };
-
-const slotsData = [
-  {
-    id: 65,
-    timing: "08:30:00",
-  },
-  {
-    id: 66,
-    timing: "10:00:00",
-  },
-  {
-    id: 67,
-    timing: "11:30:00",
-  },
-  {
-    id: 68,
-    timing: "13:00:00",
-  },
-  {
-    id: 69,
-    timing: "14:30:00",
-  },
-  {
-    id: 70,
-    timing: "16:00:00",
-  },
-  {
-    id: 71,
-    timing: "17:30:00",
-  },
-  {
-    id: 72,
-    timing: "19:00:00",
-  },
-];
 
 export default Muitable;

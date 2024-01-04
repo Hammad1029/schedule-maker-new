@@ -3,17 +3,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const CourseListAccordion = ({ title = "", data = [], actions = [] }) => {
     return (
-        <Accordion>
+        <Accordion sx={{width:"100%"}}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>{title}</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ height: "30vh", overflowY: "scroll" }}>
+            <AccordionDetails sx={{ height: "30vh" }}>
                 {data.map((i, j) => (
                     <Box key={j} sx={{
                         padding: 1,
                         backgroundColor: j % 2 === 0 ? "#E0F0EA" : "#95ADBE",
-                        display: "flex",
-                        justifyContent: "space-between"
                     }}>
                         <Box>
                             <Typography variant="subtitle1">

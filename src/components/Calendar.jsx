@@ -6,23 +6,24 @@ import {
     momentLocalizer,
 } from 'react-big-calendar'
 import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import _ from "lodash"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import WithModal from './WithModal'
 import { NotificationManager } from 'react-notifications'
+import { setIndex } from '../store/reducers/app'
 
 const localizer = momentLocalizer(moment)
 
 const WeekCalendar = ({ schedules, saveSchedule }) => {
     const slots = useSelector(state => state.app.slots)
-    const [selected, setSelected] = useState(0)
+    const { selectedIdx } = useSelector(state => state.app)
 
 
 
     const transformSched = () => {
-        return schedules.schedules[selected]?.map((course) => {
+        return schedules.schedules[selectedIdx]?.map((course) => {
             const slot = _.find(slots, { id: course.slot });
             return {
                 ...course,
@@ -54,9 +55,7 @@ const WeekCalendar = ({ schedules, saveSchedule }) => {
                     components={{
                         toolbar: () => <CustomToolbarWrapped
                             schedules={schedules}
-                            setSelected={setSelected}
                             saveSchedule={saveSchedule}
-                            selected={selected}
                         />
                     }}
                     localizer={localizer}
@@ -77,12 +76,15 @@ const WeekCalendar = ({ schedules, saveSchedule }) => {
 
 export default WeekCalendar;
 
-const CustomToolbar = ({ setSelected, saveSchedule, schedules: { possibleSchedules, schedules }, selected, ...props }) => {
+const CustomToolbar = ({ saveSchedule, schedules: { possibleSchedules, schedules }, selected, ...props }) => {
+    const dispatch = useDispatch();
+    const setSelected = (idx) => () => dispatch(setIndex(idx))
+    const { selectedIdx } = useSelector(state => state.app)
     const loggedIn = useSelector(state => state.user.loggedIn)
     return (
         <Box sx={{ justifyContent: "space-between", alignItems: "center", display: "flex", mb: 1 }}>
             <ButtonGroup disabled={possibleSchedules === 0} sx={{ justifySelf: "center" }} variant="contained">
-                <Button disabled={selected === 0} onClick={() => setSelected(prev => prev - 1)}>
+                <Button disabled={selectedIdx === 0} onClick={setSelected(selectedIdx - 1)}>
                     <ChevronLeftIcon />
                 </Button>
                 <Button onClick={() => loggedIn
@@ -90,11 +92,11 @@ const CustomToolbar = ({ setSelected, saveSchedule, schedules: { possibleSchedul
                         title: "Save Schedule",
                         bodyComp: <SaveScheduleModal
                             closeModal={props.closeModal}
-                            saveSchedule={(name) => saveSchedule(selected, name)} />
+                            saveSchedule={(name) => saveSchedule(selectedIdx, name)} />
                     }) : NotificationManager.error("Please login first")} >
                     Save Schedule
                 </Button>
-                <Button disabled={selected === possibleSchedules - 1} onClick={() => setSelected(prev => prev + 1)} >
+                <Button disabled={selectedIdx === possibleSchedules - 1} onClick={setSelected(selectedIdx + 1)} >
                     <ChevronRightIcon />
                 </Button>
             </ButtonGroup >

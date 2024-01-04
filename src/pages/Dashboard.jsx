@@ -1,4 +1,4 @@
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Paper } from "@mui/material";
 import Constraints from "../components/Constraints";
 import { useEffect, useState } from "react";
 import * as _ from "lodash";
@@ -44,6 +44,7 @@ const Dashboard = (props) => {
 
     const makeSchedule = ({ prioritized, prioritizedTeachers, offdays, firstLast, gaps }) => async () => {
         try {
+            if (selectedCourses.length === 0) return NotificationManager.error("Please add courses")
             // const reqBody = {
             //     courses: selectedCourses.map(i => i.erp),
             //     constraints: [
@@ -110,23 +111,35 @@ const Dashboard = (props) => {
 
     return (
         <Box>
-            <AppBarTop populateSavedSchedule={populateSavedSchedule}/>
+            <AppBarTop populateSavedSchedule={populateSavedSchedule} />
             <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
                 <Grid item xs={12} lg={4}>
-                    <Button
-                        variant="contained"
-                        onClick={() => props.openModal({
-                            title: "Search courses",
-                            bodyComp: <Search addCourses={addCourses} />
-                        })}
-                    >
-                        Add course
-                    </Button>
+                    <Box component={Paper} elevation={12} sx={{
+                        padding: "30px 10px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}>
+                        <Button
+                            variant="contained"
+                            onClick={() => props.openModal({
+                                title: "Search courses",
+                                bodyComp: <Search addCourses={addCourses} />,
+                                maxWidth: "lg"
+                            })}
+                            sx={{ mb: 1 }}
+                        >
+                            Add course
+                        </Button>
 
-                    <Constraints makeSchedule={makeSchedule} removeCourse={removeCourse} selectedCourses={selectedCourses} />
+                        <Constraints makeSchedule={makeSchedule} removeCourse={removeCourse} selectedCourses={selectedCourses} />
+                    </Box>
                 </Grid>
                 <Grid item xs={12} lg={8}>
-                    <WeekCalendar saveSchedule={saveSchedule} schedules={schedules} />
+                    <Box component={Paper} elevation={12} sx={{ p: 2 }}>
+                        <WeekCalendar saveSchedule={saveSchedule} schedules={schedules} />
+                    </Box>
                 </Grid>
             </Grid>
         </Box>
