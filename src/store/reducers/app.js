@@ -4,7 +4,8 @@ import { createSlice } from '@reduxjs/toolkit';
 // initial state
 const initialState = {
     slots: [],
-    generationChecks: []
+    generationChecks: [],
+    loading: false
 };
 
 // ==============================|| SLICE - MENU ||============================== //
@@ -17,9 +18,12 @@ const app = createSlice({
             state.slots = action.payload.slots;
             state.generationChecks = action.payload.generationChecks;
         },
+        setLoading(state, action) {
+            state.loading = action.payload
+        }
     }
 });
 
 export default app.reducer;
 
-export const { setAppData } = app.actions;
+export const { setAppData, setLoading } = app.actions;

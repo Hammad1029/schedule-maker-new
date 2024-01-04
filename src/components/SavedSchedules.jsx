@@ -1,15 +1,15 @@
 // SaveScheduleList.js
 import React, { useState, useEffect } from 'react';
 import {
-  List,
-  ListItem,
-  ListItemText,
+  Box,
+  Button,
+  ButtonGroup,
   Typography,
 } from '@mui/material';
 import httpService from '../utils/http.js';
 import { endpoints } from '../utils/http.js';
 
-const SavedSchedules = () => {
+const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
   const [schedules, setSchedules] = useState([]);
 
   useEffect(() => {
@@ -30,19 +30,43 @@ const SavedSchedules = () => {
     }
   };
 
+  const deleteSchedule = async (id) => {
+    const response = await httpService({
+      endpoint: endpoints.schedules.deleteSavedSchedule,
+      base: endpoints.schedules.base,
+      reqBody: { id },
+      successNotif: true
+    });
+    if (response) getData()
+  }
+
   return (
     <>
       {schedules.length > 0
-        ? <List>
-          {schedules.map((schedule) => (
-            <ListItem key={schedule.scheduleID}>
-              <ListItemText
-                primary={`Schedule ID: ${schedule.scheduleId}`}
-                secondary={`Course IDs: ${schedule.coursesId.join(', ')}`}
-              />
-            </ListItem>
+        ? <Box>
+          {schedules.map((schedule, j) => (
+            <Box key={j} sx={{
+              padding: 1,
+              backgroundColor: j % 2 === 0 ? "#E0F0EA" : "#95ADBE",
+              display: "flex",
+              justifyContent: "space-between"
+            }}>
+              <Box>
+                <Typography variant="subtitle1">
+                  {schedule.name}
+                </Typography>
+              </Box>
+
+              <ButtonGroup variant="contained" sx={{ marginLeft: 1 }}>
+                <Button size="small" onClick={() => {
+                  populateSavedSchedule(schedule.courses)
+                  closeModal()
+                }}> Populate</Button>
+                <Button size="small" onClick={() => deleteSchedule(schedule.scheduleId)}>Delete</Button>
+              </ButtonGroup>
+            </Box>
           ))}
-        </List>
+        </Box >
         : <Typography variant="h3">No Saved Schedules</Typography>}
     </>
   );

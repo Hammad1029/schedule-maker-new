@@ -19,14 +19,13 @@ const AppBarTop = (props) => {
 
   const viewSaved = () => {
     if (!loggedIn) NotificationManager.error("Please Login First")
-    else {
+    else
       props.openModal({
         title: "Saved Schedules",
         bodyComp: (
-          <SavedSchedules />
+          <SavedSchedules populateSavedSchedule={props.populateSavedSchedule} closeModal={props.closeModal} />
         )
       })
-    }
   }
 
   return (

@@ -63,7 +63,7 @@ const WithModal = (Component) =>
           open={modalOpen}
           onClose={closeModal}
           fullWidth
-          maxWidth="lg"
+          maxWidth="md"
           sx={{ zIndex: 9999 }}
         >
           <DialogTitle

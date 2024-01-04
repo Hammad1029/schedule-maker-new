@@ -1,9 +1,11 @@
 import axios from "axios"
 import { store } from "../store/index";
 import { NotificationManager } from "react-notifications";
+import { setLoading } from "../store/reducers/app";
 
 const httpService = async (config = {}) => {
     try {
+        store.dispatch(setLoading(true))
         let { baseURL, endpoint, base, reqBody, token, successNotif, description } = { ...defaultConfig, ...config };
         if (endpoint === undefined || base === undefined) throw new Error("Endpoint not given");
         if (!endpoint[2]) token = `Bearer ${store.getState().user.token}`;
@@ -29,6 +31,8 @@ const httpService = async (config = {}) => {
         console.error(e);
         NotificationManager.error("Please contact system administrators", "ERROR");
         return false
+    } finally {
+        store.dispatch(setLoading(false))
     }
 }
 
@@ -70,6 +74,7 @@ export const endpoints = {
         getAppInfo: ["getAppInfo", methods.get],
         saveSchedule: ["saveSchedule", methods.post],
         getSaveSchedule: ["getSaveSchedule", methods.get],
+        deleteSavedSchedule: ["deleteSavedSchedule", methods.post],
     }
 }
 
