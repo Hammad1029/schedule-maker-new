@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import Constraints from "./Constraints"; // Import the Constraints component
 
-const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
-  const { results: rows, totalPages, pageSize, currentPage: page } = searchResults
+const SearchTable = ({ searchResults, selectedCourses, setSelectedCourses, handlePageChange }) => {
+  const { results: rows, totalResults, pageSize, currentPage: page } = searchResults
 
   const columns = [
     { id: "slot", name: "Slot" },
@@ -25,8 +25,6 @@ const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
     { id: "instructor", name: "Instructor" },
     { id: "actions", name: "Actions" }, // New column for buttons
   ];
-
-  const [selectedCourses, setSelectedCourses] = useState([]);
 
   const handleAddClass = (course) => {
     const isAlreadySelected = selectedCourses.some(
@@ -43,10 +41,6 @@ const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
       setSelectedCourses((prevCourses) => [...prevCourses, course]);
     }
 
-    // Call the selectCourses prop with the updated selectedCourses
-    const selectedCourseIds = selectedCourses.map((selectedCourse) => selectedCourse.id);
-    selectCourses(selectedCourseIds);
-    console.log(selectedCourses)
   };
 
 
@@ -55,7 +49,7 @@ const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
       <Paper sx={{ width: "100%", overflowX: "auto" }}>
         <TableContainer sx={{ width: "100%", maxHeight: 450, mt: 1 }}>
           <Table stickyHeader>
-            <TableHead onClick={() => console.log(rows)}>
+            <TableHead>
               <TableRow>
                 {columns.map((column, index) => (
                   <TableCell
@@ -109,14 +103,15 @@ const Muitable = ({ searchResults, selectCourses, handlePageChange }) => {
         </TableContainer>
         <TablePagination
           rowsPerPage={pageSize}
-          page={page-1}
-          count={totalPages}
+          page={page - 1}
+          count={totalResults}
           component="div"
-          onPageChange={(e, p) => handlePageChange(p+1)}
+          rowsPerPageOptions={false}
+          onPageChange={(e, p) => handlePageChange(p + 1)}
         ></TablePagination>
       </Paper>
     </div>
   );
 };
 
-export default Muitable;
+export default SearchTable;

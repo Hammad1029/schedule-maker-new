@@ -36,7 +36,7 @@ const SignUp = () => {
                 successNotif: true,
                 description: "Please sign in now"
             });
-            if(response)formik.resetForm()
+            if (response) formik.resetForm()
         } catch (e) {
             console.error(e)
         }
@@ -157,11 +157,11 @@ const SignUp = () => {
                         ))}
                     </TextField>
                 </Grid>
-            </Grid>
-            <Grid xs={12} sx={{ mt: 1 }}>
-                <Button variant="contained" fullWidth type="submit" >
-                    Sign Up
-                </Button>
+                <Grid item xs={12}>
+                    <Button variant="contained" fullWidth type="submit" >
+                        Sign Up
+                    </Button>
+                </Grid>
             </Grid>
         </Box >
     );

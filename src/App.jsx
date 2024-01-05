@@ -3,6 +3,7 @@ import { Provider, useSelector } from "react-redux";
 import { store } from "./store/index";
 import Dashboard from "./pages/Dashboard";
 import { Backdrop, CircularProgress, ThemeProvider, createTheme } from "@mui/material";
+import { NotificationContainer } from "react-notifications";
 
 const colors = {
   main: "#700F1A"
@@ -29,17 +30,16 @@ function App() {
   });
 
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        <Dashboard />
-      </ThemeProvider>
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <NotificationContainer />
+      <Dashboard />
+    </ThemeProvider>
   );
 }
 

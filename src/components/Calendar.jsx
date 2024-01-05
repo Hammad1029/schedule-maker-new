@@ -41,23 +41,20 @@ const WeekCalendar = ({ schedules, saveSchedule }) => {
         }).flat() || []
     };
 
-    // useEffect(() => {
-    //     Array.isArray(schedules.schedules[idx]) &&
-    //         schedules.schedules[idx].length > 0 &&
-    //         transformSched(0);
-    // }, [schedules, idx]);
+    const calendarComponents = {
+        event: EventComponent,
+        toolbar: () => <CustomToolbarWrapped
+            possibleSchedules={schedules.possibleSchedules}
+            saveSchedule={saveSchedule}
+        />
+    }
 
     return (
         <Box>
             {slots.length > 0 && (
                 <Calendar
                     events={transformSched()}
-                    components={{
-                        toolbar: () => <CustomToolbarWrapped
-                            schedules={schedules}
-                            saveSchedule={saveSchedule}
-                        />
-                    }}
+                    components={calendarComponents}
                     localizer={localizer}
                     startAccessor="start"
                     endAccessor="end"
@@ -68,6 +65,7 @@ const WeekCalendar = ({ schedules, saveSchedule }) => {
                     views={[Views.WEEK]}
                     view={Views.WEEK}
                     style={{ height: '75vh' }}
+                    eventPropGetter={eventPropGetter}
                 />
             )}
         </Box>
@@ -76,38 +74,56 @@ const WeekCalendar = ({ schedules, saveSchedule }) => {
 
 export default WeekCalendar;
 
-const CustomToolbar = ({ saveSchedule, schedules: { possibleSchedules, schedules }, selected, ...props }) => {
+const CustomToolbar = ({ saveSchedule, possibleSchedules, selected, ...props }) => {
     const dispatch = useDispatch();
     const setSelected = (idx) => () => dispatch(setIndex(idx))
-    const { selectedIdx } = useSelector(state => state.app)
+    const { selectedIdx, saved } = useSelector(state => state.app)
     const loggedIn = useSelector(state => state.user.loggedIn)
     return (
         <Box sx={{ justifyContent: "space-between", alignItems: "center", display: "flex", mb: 1 }}>
-            <ButtonGroup disabled={possibleSchedules === 0} sx={{ justifySelf: "center" }} variant="contained">
-                <Button disabled={selectedIdx === 0} onClick={setSelected(selectedIdx - 1)}>
-                    <ChevronLeftIcon />
-                </Button>
-                <Button onClick={() => loggedIn
-                    ? props.openModal({
-                        title: "Save Schedule",
-                        bodyComp: <SaveScheduleModal
-                            closeModal={props.closeModal}
-                            saveSchedule={(name) => saveSchedule(selectedIdx, name)} />
-                    }) : NotificationManager.error("Please login first")} >
-                    Save Schedule
-                </Button>
-                <Button disabled={selectedIdx === possibleSchedules - 1} onClick={setSelected(selectedIdx + 1)} >
-                    <ChevronRightIcon />
-                </Button>
-            </ButtonGroup >
-            <Box >
-                <Typography>{possibleSchedules} schedules avaialble</Typography>
+            <Box>
+                <ButtonGroup disabled={possibleSchedules === 0} sx={{ justifySelf: "center" }} variant="contained">
+                    <Button disabled={selectedIdx === 0} onClick={setSelected(selectedIdx - 1)}>
+                        <ChevronLeftIcon />
+                    </Button>
+                    <Button disabled={saved} onClick={() => loggedIn
+                        ? props.openModal({
+                            title: "Save Schedule",
+                            bodyComp: <SaveScheduleModal
+                                closeModal={props.closeModal}
+                                saveSchedule={(name) => saveSchedule(selectedIdx, name)} />
+                        }) : NotificationManager.error("Please login first")} >
+                        Save Schedule
+                    </Button>
+                    <Button disabled={selectedIdx === possibleSchedules - 1} onClick={setSelected(selectedIdx + 1)} >
+                        <ChevronRightIcon />
+                    </Button>
+                </ButtonGroup >
+            </Box>
+            <Box>
+                <Typography sx={{ textAlign: "center" }}>{possibleSchedules} schedules avaialble</Typography>
             </Box>
         </Box >
     )
 }
 
 const CustomToolbarWrapped = WithModal(CustomToolbar)
+
+const EventComponent = ({ event }) => {
+    return (
+        <Box sx={{ textAlign: "center" }}>
+            <Typography variant="caption">{event.title}</Typography>,
+        </Box>
+    )
+}
+
+const eventPropGetter = () => ({
+    style: {
+        backgroundColor: "#700F1A",
+        borderRadius: '5px',
+        padding: "0px 10px",
+    }
+});
 
 const SaveScheduleModal = ({ saveSchedule, closeModal }) => {
     const [name, setName] = useState("")

@@ -4,12 +4,14 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Divider,
+  Paper,
   Typography,
 } from '@mui/material';
 import httpService from '../utils/http.js';
 import { endpoints } from '../utils/http.js';
 import { useDispatch } from 'react-redux';
-import { setIndex } from '../store/reducers/app.js';
+import { setIndex, setSaved } from '../store/reducers/app.js';
 
 const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
   const [schedules, setSchedules] = useState([]);
@@ -47,28 +49,30 @@ const SavedSchedules = ({ populateSavedSchedule, closeModal }) => {
   return (
     <>
       {schedules.length > 0
-        ? <Box>
+        ? <Box component={Paper} elevation={6} sx={{
+          border: "1px solid black",
+          p: 2
+        }}>
           {schedules.map((schedule, j) => (
-            <Box key={j} sx={{
-              padding: 1,
-              backgroundColor: j % 2 === 0 ? "#E0F0EA" : "#95ADBE",
-              display: "flex",
-              justifyContent: "space-between"
-            }}>
-              <Box>
+            <Box key={j}>
+              <Box sx={{
+                display: "flex",
+                justifyContent: "space-between"
+              }}>
                 <Typography variant="subtitle1">
                   {schedule.name}
                 </Typography>
+                <ButtonGroup variant="contained" sx={{ marginLeft: 1 }}>
+                  <Button size="small" onClick={() => {
+                    populateSavedSchedule(schedule.courses)
+                    dispatch(setIndex(0))
+                    dispatch(setSaved(true))
+                    closeModal()
+                  }}> Populate</Button>
+                  <Button size="small" onClick={() => deleteSchedule(schedule.scheduleId)}>Delete</Button>
+                </ButtonGroup>
               </Box>
-
-              <ButtonGroup variant="contained" sx={{ marginLeft: 1 }}>
-                <Button size="small" onClick={() => {
-                  populateSavedSchedule(schedule.courses)
-                  dispatch(setIndex(0))
-                  closeModal()
-                }}> Populate</Button>
-                <Button size="small" onClick={() => deleteSchedule(schedule.scheduleId)}>Delete</Button>
-              </ButtonGroup>
+              {j !== schedules.length - 1 && <Divider sx={{ m: 1.2, backgroundColor: "#700F1A" }} />}
             </Box>
           ))}
         </Box >

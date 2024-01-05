@@ -20,7 +20,6 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <App />
-      <NotificationContainer />
     </Provider>,
   </React.StrictMode>
 );

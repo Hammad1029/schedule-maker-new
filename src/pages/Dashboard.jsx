@@ -8,7 +8,7 @@ import Search from "../components/Search";
 import WithModal from "../components/WithModal";
 import httpService, { endpoints } from "../utils/http";
 import { useDispatch } from "react-redux";
-import { setAppData } from "../store/reducers/app";
+import { setAppData, setSaved } from "../store/reducers/app";
 import { NotificationManager } from "react-notifications";
 
 const Dashboard = (props) => {
@@ -42,40 +42,18 @@ const Dashboard = (props) => {
         schedules: [schedule]
     })
 
-    const makeSchedule = ({ prioritized, prioritizedTeachers, offdays, firstLast, gaps }) => async () => {
+    const makeSchedule = (data, order) => async () => {
         try {
             if (selectedCourses.length === 0) return NotificationManager.error("Please add courses")
-            // const reqBody = {
-            //     courses: selectedCourses.map(i => i.erp),
-            //     constraints: [
-            //         {
-            //             fn: "resolveTeachers",
-            //             order: 2,
-            //             data: [prioritizedTeachers]
-            //         },
-            //         {
-            //             fn: "resolveGaps",
-            //             order: 4,
-            //             data: gaps
-            //         },
-            //         {
-            //             fn: "resolveSpecific",
-            //             order: 1,
-            //             data: prioritized.map(i => i.erp)
-            //         },
-            //         {
-            //             fn: "resolveDays",
-            //             order: 3,
-            //             data: offdays
-            //         },
-            //         {
-            //             fn: "resolveTime",
-            //             order: 5,
-            //             data: firstLast
-            //         }
-            //     ]
-            // }
-            const reqBody = JSON.parse(`{"courses":["7275","7585","7665","7345","7420","7664","7352","7479","7444","7547","7546","7408","7566","7543","7679","7573","7577","7493","7577","7571"],"constraints":[{"fn":"resolveTeachers","order":2,"data":[{"Operating Systems":"Ms. Tasbiha Fatima"}]},{"fn":"resolveGaps","order":4,"data":[0,0]},{"fn":"resolveSpecific","order":1,"data":["7679"]},{"fn":"resolveDays","order":3,"data":[]},{"fn":"resolveTime","order":5,"data":[10,13]}]}`)
+            const reqBody = {
+                courses: selectedCourses.map(i => i.erp),
+                constraints: Object.keys(order).map(key => ({
+                    fn: key,
+                    order: data[key].order,
+                    data: data[order[key].state]
+                }))
+            }
+            // const reqBody = JSON.parse(`{"courses":["7275","7585","7665","7345","7420","7664","7352","7479","7444","7547","7546","7408","7566","7543","7679","7573","7577","7493","7577","7571"],"constraints":[{"fn":"resolveTeachers","order":2,"data":[{"Operating Systems":"Ms. Tasbiha Fatima"}]},{"fn":"resolveGaps","order":4,"data":[0,0]},{"fn":"resolveSpecific","order":1,"data":["7679"]},{"fn":"resolveDays","order":3,"data":[]},{"fn":"resolveTime","order":5,"data":[10,13]}]}`)
             const response = await httpService({
                 endpoint: endpoints.schedules.makeSchedule,
                 base: endpoints.schedules.base,
@@ -90,6 +68,7 @@ const Dashboard = (props) => {
                 ))
                 setSchedules(response)
                 setGenerationReq(reqBody)
+                dispatch(setSaved(false))
             }
         } catch (e) {
             console.error(e)
@@ -130,7 +109,7 @@ const Dashboard = (props) => {
                             })}
                             sx={{ mb: 1 }}
                         >
-                            Add course
+                            Add courses
                         </Button>
 
                         <Constraints makeSchedule={makeSchedule} removeCourse={removeCourse} selectedCourses={selectedCourses} />

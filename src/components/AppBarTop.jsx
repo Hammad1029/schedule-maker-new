@@ -22,6 +22,7 @@ const AppBarTop = (props) => {
     else
       props.openModal({
         title: "Saved Schedules",
+        maxWidth:"sm",
         bodyComp: (
           <SavedSchedules populateSavedSchedule={props.populateSavedSchedule} closeModal={props.closeModal} />
         )

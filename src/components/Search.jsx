@@ -13,8 +13,7 @@ import { SearchOutlined } from "@mui/icons-material";
 import httpService from "../utils/http.js";
 import { endpoints } from "../utils/http.js";
 import { useFormik } from 'formik';
-import SearchResults from "./SearchResults.jsx";
-import Muitable from "./MuiTable";
+import SearchTable from "./SearchTable.jsx";
 
 const Search = ({ addCourses }) => {
   const [searchResults, setSearchResults] = useState({
@@ -28,9 +27,6 @@ const Search = ({ addCourses }) => {
   });
 
   const [selected, setSelected] = useState([]);
-  const selectCourses = (ids) =>
-    setSelected(searchResults.results.filter((row) => ids.includes(row.id)))
-
 
   const [advanced, setAdvanced] = useState(false);
 
@@ -149,9 +145,12 @@ const Search = ({ addCourses }) => {
           </Button>
         </ButtonGroup>
       </Grid>
-      {/* <SearchResults selectCourses={selectCourses} handlePageChange={handlePageChange} data={searchResults} /> */}
-      {/* <Muitable /> */}
-      {<Muitable handlePageChange={handlePageChange} searchResults={searchResults} selectCourses={selectCourses} />}
+      <SearchTable
+        handlePageChange={handlePageChange}
+        searchResults={searchResults}
+        setSelectedCourses={setSelected}
+        selectedCourses={selected}
+      />
     </Box>
   );
 };

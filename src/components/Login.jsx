@@ -1,5 +1,5 @@
 import React from 'react';
-import {  TextField, Button, Box, Grid } from '@mui/material';
+import { TextField, Button, Box, Grid } from '@mui/material';
 import httpService from '../utils/http.js';
 import { endpoints } from '../utils/http.js';
 import { useDispatch } from 'react-redux';
@@ -51,7 +51,7 @@ const LoginForm = ({ closeModal }) => {
 
     return (
         <Box component="form" onSubmit={formik.handleSubmit}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} >
                 <Grid item xs={12}>
                     <TextField
                         variant="outlined"
@@ -76,7 +76,7 @@ const LoginForm = ({ closeModal }) => {
                         {...getErrorProps("password")}
                     />
                 </Grid>
-                <Grid xs={12} sx={{ mt: 1 }}>
+                <Grid item xs={12}>
                     <Button variant="contained" fullWidth type="submit" >
                         Sign In
                     </Button>

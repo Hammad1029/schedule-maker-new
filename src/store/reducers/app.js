@@ -6,7 +6,8 @@ const initialState = {
     slots: [],
     generationChecks: [],
     loading: false,
-    selectedIdx: 0
+    selectedIdx: 0,
+    saved: false
 };
 
 // ==============================|| SLICE - MENU ||============================== //
@@ -22,12 +23,15 @@ const app = createSlice({
         setLoading(state, action) {
             state.loading = action.payload
         },
-        setIndex(state,action) {
+        setIndex(state, action) {
             state.selectedIdx = action.payload
+        },
+        setSaved(state, action) {
+            state.saved = action.payload
         }
     }
 });
 
 export default app.reducer;
 
-export const { setAppData, setLoading,setIndex } = app.actions;
+export const { setAppData, setLoading, setIndex, setSaved } = app.actions;
