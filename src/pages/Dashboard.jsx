@@ -43,23 +43,97 @@ const Dashboard = (props) => {
     })
 
     const makeSchedule = (data, order) => async () => {
+        
         try {
+           // order = data.order;
+            console.log(data, order)
             if (selectedCourses.length === 0) return NotificationManager.error("Please add courses")
+
+                         console.log("77hhhhgb");           
+
+            // const reqBody = {
+            //     courses: selectedCourses.map(i => i.erp),
+            //     constraints: Object.keys(order).map(key => ({
+            //         fn: key,
+            //         order: data[key].order,
+            //         data: data[order[key].state]
+            //     }))
+            // }
+
+           // const reqBody = JSON.parse(`{"courses":["7275","7585","7665","7345","7420","7664","7352","7479","7444","7547","7546","7408","7566","7543","7679","7573","7577","7493","7577","7571"],"constraints":[{"fn":"resolveTeachers","order":2,"data":[{"Operating Systems":"Ms. Tasbiha Fatima"}]},{"fn":"resolveGaps","order":4,"data":[0,0]},{"fn":"resolveSpecific","order":1,"data":["7679"]},{"fn":"resolveDays","order":3,"data":[]},{"fn":"resolveTime","order":5,"data":[10,13]}]}`)
+            //  console.log("kjhvbn")           
+            // console.log("reqBody:", JSON.stringify(reqBody, null, 2));
+
+            // const reqBody = {
+            //   courses: selectedCourses.map((i) => i.erp),
+            //   constraints: Object.keys(order)
+            //     .map((key) => {
+            //       const constraintData = data[key];
+            //       const orderData = order[key];
+            //       if (constraintData && orderData && orderData.state) {
+            //         return {
+            //           fn: key,
+            //           order: orderData.order,
+            //           data: data[orderData.state],
+            //         };
+            //       } else {
+            //         console.error(
+            //           `Invalid constraint or order data for key: ${key}`
+            //         );
+            //         return null;
+            //       }
+            //     })
+            //     .filter(Boolean),
+            // };
+
+            // console.log("reqBody:", JSON.stringify(reqBody, null, 2));
+
             const reqBody = {
-                courses: selectedCourses.map(i => i.erp),
-                constraints: Object.keys(order).map(key => ({
-                    fn: key,
-                    order: data[key].order,
-                    data: data[order[key].state]
-                }))
-            }
-            // const reqBody = JSON.parse(`{"courses":["7275","7585","7665","7345","7420","7664","7352","7479","7444","7547","7546","7408","7566","7543","7679","7573","7577","7493","7577","7571"],"constraints":[{"fn":"resolveTeachers","order":2,"data":[{"Operating Systems":"Ms. Tasbiha Fatima"}]},{"fn":"resolveGaps","order":4,"data":[0,0]},{"fn":"resolveSpecific","order":1,"data":["7679"]},{"fn":"resolveDays","order":3,"data":[]},{"fn":"resolveTime","order":5,"data":[10,13]}]}`)
+              courses: selectedCourses.map((i) => i.erp),
+              constraints: Object.keys(order)
+                .sort((a, b) => order[a].order - order[b].order) // Sort constraints based on order
+                .map((key) => {
+                    var constraintData = data[key];
+                    if (key === "resolveSpecific") {
+                      constraintData = data.prioritized;
+                    } else if (key === "resolveTeachers") {
+                      constraintData = data.prioritizedTeachers;
+                    } else if (key === "resolveDays") {
+                      constraintData = data.offdays;
+                    } else if (key === "resolveTime") {
+                      constraintData = data.firstLast;
+                    } else if (key === "resolveGaps") {
+                      constraintData = data.gaps;
+                    }
+                     var orderData = order[key];
+                 
+                 
+                  console.log("constdata:", constraintData, orderData, key);
+                  if (constraintData && orderData && orderData.state) {
+                    return {
+                      fn: key,
+                      order: orderData.order,
+                      data: data[orderData.state],
+                    };
+                  } else {
+                    console.error(
+                      `Invalid constraint or order data for key: ${key}`
+                    );
+                    return null;
+                  }
+                })
+                .filter(Boolean),
+            };
+
+            console.log("reqBody:", JSON.stringify(reqBody, null, 2));
+
             const response = await httpService({
                 endpoint: endpoints.schedules.makeSchedule,
                 base: endpoints.schedules.base,
                 reqBody
             });
             if (response) {
+                console.log(response)
                 NotificationManager.success(
                     response.possibleSchedules > 0 ? `${response.possibleSchedules} schedules made` : "No possible schedule"
                 )

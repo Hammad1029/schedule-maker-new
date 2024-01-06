@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -25,8 +24,9 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
   const [offdays, setOffdays] = useState([]);
   const [firstLast, setFirstLast] = useState([0, 0]);
   const [gaps, setGaps] = useState([0, 0]);
-  const slots = useSelector(state => state.app.slots);
-
+ //const slotsData = useSelector((state) => state.app.slots);
+  const slots = slotsData.map((slot) => ({ id: slot.id, timing: slot.timing }));
+//console.log(slots)
   const [order, setOrder] = useState({
     resolveSpecific: {
       order: 1,
@@ -37,7 +37,9 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
           data={prioritized.map((course) => ({
             ...course,
             mainText: `${course.instructor} - ${course.title}`,
-            subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot}`,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | ${
+              course.slot
+            }`,
           }))}
           actions={[
             {
@@ -49,7 +51,7 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             },
           ]}
         />
-      )
+      ),
     },
     resolveTeachers: {
       order: 2,
@@ -71,14 +73,16 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             },
           ]}
         />
-      )
+      ),
     },
     resolveDays: {
       order: 3,
       state: "offdays",
       component: (
         <>
-          <Typography variant="button" sx={{ mr: 2 }}>Off days</Typography>
+          <Typography variant="button" sx={{ mr: 2 }}>
+            Off days
+          </Typography>
           <FormControl sx={{ m: 1, minWidth: 150 }} size="small">
             <InputLabel>Off days</InputLabel>
             <Select
@@ -88,7 +92,9 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
                 const {
                   target: { value },
                 } = event;
-                setOffdays(typeof value === "string" ? value.split(",") : value);
+                setOffdays(
+                  typeof value === "string" ? value.split(",") : value
+                );
               }}
               input={<OutlinedInput label="Off days" />}
               renderValue={(selected) => selected.join(", ")}
@@ -102,7 +108,7 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             </Select>
           </FormControl>
         </>
-      )
+      ),
     },
     resolveTime: {
       order: 4,
@@ -116,7 +122,9 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
               <Select
                 value={firstLast[0]}
                 label="First Class"
-                onChange={(e) => setFirstLast((prev) => [e.target.value, prev[1]])}
+                onChange={(e) =>
+                  setFirstLast((prev) => [e.target.value, prev[1]])
+                }
               >
                 {slots.map((i) => (
                   <MenuItem key={i.id} value={i.id}>
@@ -131,7 +139,9 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
                 value={firstLast[1]}
                 autoWidth
                 label="Last Class"
-                onChange={(e) => setFirstLast((prev) => [prev[0], e.target.value])}
+                onChange={(e) =>
+                  setFirstLast((prev) => [prev[0], e.target.value])
+                }
               >
                 {slots.map((i) => (
                   <MenuItem key={i.id} value={i.id}>
@@ -142,14 +152,16 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             </FormControl>
           </Box>
         </>
-      )
+      ),
     },
     resolveGaps: {
       order: 5,
       state: "gaps",
       component: (
         <>
-          <Typography variant="button">Min & max gap length (in terms of slots)</Typography>
+          <Typography variant="button">
+            Min & max gap length (in terms of slots)
+          </Typography>
           <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
             <InputLabel>Minimum</InputLabel>
             <Select
@@ -177,34 +189,38 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
                 </MenuItem>
               ))}
             </Select>
+         
           </FormControl>
         </>
-      )
+      ),
     },
-  })
-
+  });
 
   return (
-    <Box sx={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      width: "90%",
-      "&>*": {
-        width: "100%",
+    <Box
+      sx={{
         display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center"
-      },
-    }}>
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "90%",
+        "&>*": {
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+      }}
+    >
       <Box>
         <CourseListAccordion
           title="Selected Courses"
           data={selectedCourses.map((course) => ({
             ...course,
             mainText: `${course.instructor} - ${course.title}`,
-            subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot} | ${course.instructor} | ${course.title}  `,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | ${
+              course.slot
+            } | ${course.instructor} | ${course.title}  `,
           }))}
           actions={[
             {
@@ -216,6 +232,7 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             {
               callback: (i) =>
                 setPrioritizedTeachers((prevState) => ({
+                  
                   ...prevState,
                   [i.title]: i.instructor,
                 })),
@@ -229,34 +246,101 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
         />
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 1, mb: 1 }}>
-        <Typography variant="button" color="error">Please order by the priority of your requirements</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mt: 1,
+          mb: 1,
+        }}
+      >
+        <Typography variant="button" color="error">
+          Please order by the priority of your requirements
+        </Typography>
       </Box>
 
-      {_.sortBy(Object.entries(order), ([, value]) => value.order).map(([key, { component }], j) => (
-        <>
-          <OrderConstraints order={order} setOrder={setOrder} name={key}>
-            {component}
-          </OrderConstraints>
-          {j !== 4 && <Divider sx={{ m: 1.2, backgroundColor: "#700F1A" }} />}
-        </>
-      ))}
+      {_.sortBy(Object.entries(order), ([, value]) => value.order).map(
+        ([key, { component }], j) => (
+          <>
+            <OrderConstraints order={order} setOrder={setOrder} name={key}>
+              {component}
+            </OrderConstraints>
+            {j !== 4 && <Divider sx={{ m: 1.2, backgroundColor: "#700F1A" }} />}
+          </>
+        )
+      )}
 
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 1 }}>
-        <Button variant="contained" onClick={makeSchedule({
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mt: 1,
+        }}
+      >
+        {/* <Button variant="contained" onClick={makeSchedule({
           prioritized: prioritized.map(i => i.erp),
           prioritizedTeachers: [prioritizedTeachers],
           gaps,
           firstLast,
-          offdays
-        })}>Make Schedule</Button>
+          offdays, order
+        })}>Make Schedule</Button> */}
+        <Button
+          variant="contained"
+          onClick={makeSchedule(
+            {
+              offdays,
+              gaps,
+              prioritized: prioritized.map((i) => i.erp),
+              prioritizedTeachers: [prioritizedTeachers],
+              firstLast,
+            },
+            order
+          )}
+        >
+          Make Schedule
+        </Button>
       </Box>
-    </Box >
+    </Box>
   );
 };
 
 export default Constraints;
-
+const slotsData = [
+  {
+    id: 1,
+    timing: "08:30:00",
+  },
+  {
+    id: 2,
+    timing: "10:00:00",
+  },
+  {
+    id: 3,
+    timing: "11:30:00",
+  },
+  {
+    id: 4,
+    timing: "13:00:00",
+  },
+  {
+    id: 5,
+    timing: "14:30:00",
+  },
+  {
+    id: 6,
+    timing: "16:00:00",
+  },
+  {
+    id: 7,
+    timing: "17:30:00",
+  },
+  {
+    id: 8,
+    timing: "19:00:00",
+  },
+];
 const days = [
   "Monday",
   "Tuesday",
