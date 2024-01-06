@@ -24,175 +24,27 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
   const [offdays, setOffdays] = useState([]);
   const [firstLast, setFirstLast] = useState([0, 0]);
   const [gaps, setGaps] = useState([0, 0]);
- //const slotsData = useSelector((state) => state.app.slots);
-  const slots = slotsData.map((slot) => ({ id: slot.id, timing: slot.timing }));
-//console.log(slots)
+  const slotsData = useSelector((state) => state.app.slots);
   const [order, setOrder] = useState({
     resolveSpecific: {
       order: 1,
       state: "prioritized",
-      component: (
-        <CourseListAccordion
-          title="Prioritized Courses"
-          data={prioritized.map((course) => ({
-            ...course,
-            mainText: `${course.instructor} - ${course.title}`,
-            subText: `${course.erp} | ${course.days?.join(" & ")} | ${
-              course.slot
-            }`,
-          }))}
-          actions={[
-            {
-              callback: ({ erp }) =>
-                setPrioritized((prevState) =>
-                  prevState.filter((i) => i.erp !== erp)
-                ),
-              title: "Remove",
-            },
-          ]}
-        />
-      ),
     },
     resolveTeachers: {
       order: 2,
       state: "prioritizedTeachers",
-      component: (
-        <CourseListAccordion
-          title="Prioritized Teachers"
-          data={Object.keys(prioritizedTeachers).map((courseName) => ({
-            mainText: prioritizedTeachers[courseName],
-            subText: courseName,
-          }))}
-          actions={[
-            {
-              callback: ({ subText: courseName }) =>
-                setPrioritizedTeachers((prevState) =>
-                  _.omit(prevState, courseName)
-                ),
-              title: "Remove",
-            },
-          ]}
-        />
-      ),
     },
     resolveDays: {
       order: 3,
       state: "offdays",
-      component: (
-        <>
-          <Typography variant="button" sx={{ mr: 2 }}>
-            Off days
-          </Typography>
-          <FormControl sx={{ m: 1, minWidth: 150 }} size="small">
-            <InputLabel>Off days</InputLabel>
-            <Select
-              multiple
-              value={offdays}
-              onChange={(event) => {
-                const {
-                  target: { value },
-                } = event;
-                setOffdays(
-                  typeof value === "string" ? value.split(",") : value
-                );
-              }}
-              input={<OutlinedInput label="Off days" />}
-              renderValue={(selected) => selected.join(", ")}
-            >
-              {days.map((day) => (
-                <MenuItem key={day} value={day}>
-                  <Checkbox checked={offdays.indexOf(day) > -1} />
-                  <ListItemText primary={day} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
-      ),
     },
     resolveTime: {
       order: 4,
       state: "firstLast",
-      component: (
-        <>
-          <Typography variant="button">First & last class</Typography>
-          <Box sx={{ display: "flex" }}>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel>First Class</InputLabel>
-              <Select
-                value={firstLast[0]}
-                label="First Class"
-                onChange={(e) =>
-                  setFirstLast((prev) => [e.target.value, prev[1]])
-                }
-              >
-                {slots.map((i) => (
-                  <MenuItem key={i.id} value={i.id}>
-                    {i.timing}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel>Last Class</InputLabel>
-              <Select
-                value={firstLast[1]}
-                autoWidth
-                label="Last Class"
-                onChange={(e) =>
-                  setFirstLast((prev) => [prev[0], e.target.value])
-                }
-              >
-                {slots.map((i) => (
-                  <MenuItem key={i.id} value={i.id}>
-                    {i.timing}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        </>
-      ),
     },
     resolveGaps: {
       order: 5,
       state: "gaps",
-      component: (
-        <>
-          <Typography variant="button">
-            Min & max gap length (in terms of slots)
-          </Typography>
-          <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-            <InputLabel>Minimum</InputLabel>
-            <Select
-              value={gaps[0]}
-              label="Minimum"
-              onChange={(e) => setGaps((prev) => [e.target.value, prev[1]])}
-            >
-              {slots.map((i, j) => (
-                <MenuItem key={i.id} value={j}>
-                  {j}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-            <InputLabel>Maximum</InputLabel>
-            <Select
-              value={gaps[1]}
-              label="Maximum"
-              onChange={(e) => setGaps((prev) => [prev[0], e.target.value])}
-            >
-              {slots.map((i, j) => (
-                <MenuItem key={i.id} value={j}>
-                  {j}
-                </MenuItem>
-              ))}
-            </Select>
-         
-          </FormControl>
-        </>
-      ),
     },
   });
 
@@ -218,9 +70,8 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
           data={selectedCourses.map((course) => ({
             ...course,
             mainText: `${course.instructor} - ${course.title}`,
-            subText: `${course.erp} | ${course.days?.join(" & ")} | ${
-              course.slot
-            } | ${course.instructor} | ${course.title}  `,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | ${course.slot
+              } | ${course.instructor} | ${course.title}  `,
           }))}
           actions={[
             {
@@ -232,7 +83,7 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
             {
               callback: (i) =>
                 setPrioritizedTeachers((prevState) => ({
-                  
+
                   ...prevState,
                   [i.title]: i.instructor,
                 })),
@@ -260,16 +111,150 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
         </Typography>
       </Box>
 
-      {_.sortBy(Object.entries(order), ([, value]) => value.order).map(
-        ([key, { component }], j) => (
-          <>
-            <OrderConstraints order={order} setOrder={setOrder} name={key}>
-              {component}
-            </OrderConstraints>
-            {j !== 4 && <Divider sx={{ m: 1.2, backgroundColor: "#700F1A" }} />}
-          </>
-        )
-      )}
+      <OrderConstraints order={order} setOrder={setOrder} name="resolveSpecific">
+        <CourseListAccordion
+          title="Prioritized Courses"
+          data={prioritized.map((course) => ({
+            ...course,
+            mainText: `${course.instructor} - ${course.title}`,
+            subText: `${course.erp} | ${course.days?.join(" & ")} | 
+            ${slotsData.find((slot) => slot.id === course.slot)?.timing}`,
+          }))}
+          actions={[
+            {
+              callback: ({ erp }) =>
+                setPrioritized((prevState) =>
+                  prevState.filter((i) => i.erp !== erp)
+                ),
+              title: "Remove",
+            },
+          ]}
+        />
+      </OrderConstraints>
+
+      <OrderConstraints order={order} setOrder={setOrder} name="resolveTeachers">
+        <CourseListAccordion
+          title="Prioritized Teachers"
+          data={Object.keys(prioritizedTeachers).map((courseName) => ({
+            mainText: prioritizedTeachers[courseName],
+            subText: courseName,
+          }))}
+          actions={[
+            {
+              callback: ({ subText: courseName }) =>
+                setPrioritizedTeachers((prevState) =>
+                  _.omit(prevState, courseName)
+                ),
+              title: "Remove",
+            },
+          ]}
+        />
+      </OrderConstraints>
+
+      <OrderConstraints order={order} setOrder={setOrder} name="resolveDays">
+        <Typography variant="button" sx={{ mr: 2 }}>
+          Off days
+        </Typography>
+        <FormControl sx={{ m: 1, minWidth: 150 }} size="small">
+          <InputLabel>Off days</InputLabel>
+          <Select
+            multiple
+            value={offdays}
+            onChange={(event) => {
+              const {
+                target: { value },
+              } = event;
+              setOffdays(
+                typeof value === "string" ? value.split(",") : value
+              );
+            }}
+            input={<OutlinedInput label="Off days" />}
+            renderValue={(selected) => selected.join(", ")}
+          >
+            {days.map((day) => (
+              <MenuItem key={day} value={day}>
+                <Checkbox checked={offdays.indexOf(day) > -1} />
+                <ListItemText primary={day} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </OrderConstraints>
+
+      <OrderConstraints order={order} setOrder={setOrder} name="resolveTime">
+        <Typography variant="button">First & last class</Typography>
+        <Box sx={{ display: "flex" }}>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel>First Class</InputLabel>
+            <Select
+              value={firstLast[0]}
+              label="First Class"
+              onChange={(e) =>
+                setFirstLast((prev) => [e.target.value, prev[1]])
+              }
+            >
+              {slotsData.map((i) => (
+                <MenuItem key={i.id} value={i.id}>
+                  {i.timing}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel>Last Class</InputLabel>
+            <Select
+              value={firstLast[1]}
+              autoWidth
+              label="Last Class"
+              onChange={(e) =>
+                setFirstLast((prev) => [prev[0], e.target.value])
+              }
+            >
+              {slotsData.map((i) => (
+                <MenuItem key={i.id} value={i.id}>
+                  {i.timing}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </OrderConstraints>
+
+
+      <OrderConstraints order={order} setOrder={setOrder} name="resolveGaps">
+        <Typography variant="button">
+          Min & max gap length (in terms of slots)
+        </Typography>
+        <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+          <InputLabel>Minimum</InputLabel>
+          <Select
+            value={gaps[0]}
+            label="Minimum"
+            onChange={(e) => setGaps((prev) => [e.target.value, prev[1]])}
+          >
+            {slotsData.map((i, j) => (
+              <MenuItem key={i.id} value={j}>
+                {j}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+          <InputLabel>Maximum</InputLabel>
+          <Select
+            value={gaps[1]}
+            label="Maximum"
+            onChange={(e) => setGaps((prev) => [prev[0], e.target.value])}
+          >
+            {slotsData.map((i, j) => (
+              <MenuItem key={i.id} value={j}>
+                {j}
+              </MenuItem>
+            ))}
+          </Select>
+
+        </FormControl>
+      </OrderConstraints>
 
       <Box
         sx={{
@@ -307,40 +292,6 @@ const Constraints = ({ makeSchedule, removeCourse, selectedCourses }) => {
 };
 
 export default Constraints;
-const slotsData = [
-  {
-    id: 1,
-    timing: "08:30:00",
-  },
-  {
-    id: 2,
-    timing: "10:00:00",
-  },
-  {
-    id: 3,
-    timing: "11:30:00",
-  },
-  {
-    id: 4,
-    timing: "13:00:00",
-  },
-  {
-    id: 5,
-    timing: "14:30:00",
-  },
-  {
-    id: 6,
-    timing: "16:00:00",
-  },
-  {
-    id: 7,
-    timing: "17:30:00",
-  },
-  {
-    id: 8,
-    timing: "19:00:00",
-  },
-];
 const days = [
   "Monday",
   "Tuesday",

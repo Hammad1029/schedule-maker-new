@@ -104,19 +104,16 @@ const SearchTable = ({
             </TableHead>
             <TableBody>
               {rows.map((row, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} sx={{ cursor: "pointer" }} onClick={() => handleToggleClass(row)}>
                   <TableCell>
                     <Checkbox
                       checked={isSelected(row)}
                       onChange={() => handleToggleClass(row)}
                     />
                   </TableCell>
-                  <TableCell>{row.slot}</TableCell>
-                  <TableCell>{`${
-                    slotsData.find((slot) => slot.id === row.slot)?.timing
-                  } - ${
-                    slotsData.find((slot) => slot.id === row.slot + 1)?.timing
-                  }`}</TableCell>
+                  <TableCell>{`${slotsData.find((slot) => slot.id === row.slot)?.timing
+                    } - ${slotsData.find((slot) => slot.id === row.slot + 1)?.timing
+                    }`}</TableCell>
                   <TableCell>{row.days}</TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.program}</TableCell>
